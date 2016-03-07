@@ -1,0 +1,30 @@
+<div class="row"  ng-if="isadmin()" >
+    <form>
+        <div class="form-group">
+            <label for="inputTitle">Name</label>
+            <input type="text" class="form-control" id="inputTitle" placeholder="Name" ng-model="publisher.Name">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" placeholder="Email" ng-model="publisher.Email">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" placeholder="Name" ng-model="publisher.Password">
+        </div>
+        <div class="form-group">
+            <label for="exampleInputFile">Image input</label>
+            <input type="file" id="exampleInputFile" ng-model="publisher.Image" base-sixty-four-input>
+            <p class="help-block">Imagem do artigo.</p>
+        </div>
+
+        <div class="checkbox">
+            <label>
+                <input type="checkbox"ng-model="publisher.Admin"> Admin
+            </label>
+        </div>
+
+
+        <button type="submit" ng-click="submit()" class="btn btn-default">Submit</button>
+    </form>
+</div>

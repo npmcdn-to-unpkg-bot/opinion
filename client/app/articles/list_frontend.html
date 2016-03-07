@@ -1,0 +1,25 @@
+<div class="xResults" style="">
+    <div class="newsListWrapper">
+        <ul class="newsList">
+
+            <li ng-repeat="article in articles" ng-class="{first : $first}" class="item">
+                <div class="itemHeader">
+                    <div class="image">
+                        <a href="http://www.azorestv.com/index.php/p/54/opiniao/#/articles/view/{{article.Id}}"><img data-ng-src="data:{{article.Image.Filetype}};base64,{{article.Image.Base64}}" alt="{{article.Title}}" style=""></a>
+                    </div>
+                    <div class="title"><a href="http://www.azorestv.com/index.php/p/54/opiniao/#/articles/view/{{article.Id}}">{{article.Title}} </a></div>
+                    <div class="user">De: <a href="http://www.azorestv.com/index.php/portal/user/301/vitec/">Vitec</a></div>
+                    <div class="date">{{article.Date | amParse:'YYYY.MM.DD HH:mm:ss'}}</div>
+                </div>
+                <div class="description">
+                    {{article.Description}}
+                    <a href="http://www.azorestv.com/index.php/p/54/opiniao/#/articles/view/{{article.Id}}">Leia mais</a>
+                </div>
+            </li>
+
+
+        </ul>
+    </div>
+
+    <div class="clearLeft"></div>
+</div>

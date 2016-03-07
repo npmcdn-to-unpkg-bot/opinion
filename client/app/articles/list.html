@@ -1,0 +1,21 @@
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Approved</th>
+        <th ng-if="isadmin()">Publisher Name</th>
+        <th>Image</th>
+        <th>Opções</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="article in articles">
+        <td>{{article.Title}}</td>
+        <td>{{article.Approved}}</td>
+        <td ng-if="isadmin()">{{article.PublisherName}}</td>
+        <td><img ng-if="article.Image.Base64" style="height: 50px" data-ng-src="data:{{article.Image.Filetype}};base64,{{article.Image.Base64}}"></td>
+        <td><a href="#/articles/edit/{{article.Id}}" class="btn btn-default glyphicon glyphicon-edit" aria-hidden="true"></a><a ng-click="delete(article.Id)" class="btn btn-default glyphicon glyphicon-remove-circle" aria-hidden="true"></a></td>
+    </tr>
+    </tbody>
+</table>

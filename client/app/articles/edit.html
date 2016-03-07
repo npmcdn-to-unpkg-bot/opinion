@@ -1,0 +1,36 @@
+<div class="row">
+    <form>
+        <div class="form-group">
+            <label for="inputTitle">Title</label>
+            <input type="text" class="form-control" id="inputTitle" placeholder="Title" ng-model="article.Title">
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <wysiwyg textarea-id="Description" textarea-class="form-control" textarea-height="80px"
+                     textarea-name="textareaQuestion" textarea-required ng-model="article.Description"
+                     enable-bootstrap-title="true" ></wysiwyg>
+
+        </div>
+        <div class="form-group">
+            <label>Text</label>
+            <wysiwyg textarea-id="question" textarea-class="form-control" textarea-height="80px"
+                     textarea-name="textareaQuestion" textarea-required ng-model="article.Text"
+                     enable-bootstrap-title="true" ></wysiwyg>
+
+        </div>
+
+        <div class="form-group">
+            <label for="exampleInputFile">Image input</label>
+            <input type="file" id="exampleInputFile" ng-model="article.Image" base-sixty-four-input>
+            <p class="help-block">Imagem do artigo.</p>
+        </div>
+
+        <div class="form-group"  ng-if="isadmin()" >
+            <label>Approved</label>
+            <input type="checkbox" ng-model="article.Approved" />
+
+        </div>
+        <button type="submit" ng-click="submit()" class="btn btn-default">Submit</button>
+    </form>
+</div>
