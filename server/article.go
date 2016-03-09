@@ -196,6 +196,13 @@ func (ArticlesController) Edit(c *gin.Context) {
 		c.Error(err)
 		return
 	}
+	tmp,err:=resizeImage(&a.Image.Base64)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	a.Image.Base64=*tmp
 
 	err = db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(ArticlesBucket)
