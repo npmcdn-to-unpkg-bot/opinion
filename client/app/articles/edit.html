@@ -9,14 +9,14 @@
             <label>Description</label>
             <wysiwyg textarea-id="Description" textarea-class="form-control" textarea-height="80px"
                      textarea-name="textareaQuestion" textarea-required ng-model="article.Description"
-                     enable-bootstrap-title="true" ></wysiwyg>
+                     enable-bootstrap-title="true"></wysiwyg>
 
         </div>
         <div class="form-group">
             <label>Text</label>
             <wysiwyg textarea-id="question" textarea-class="form-control" textarea-height="80px"
                      textarea-name="textareaQuestion" textarea-required ng-model="article.Text"
-                     enable-bootstrap-title="true" ></wysiwyg>
+                     enable-bootstrap-title="true"></wysiwyg>
 
         </div>
 
@@ -26,9 +26,9 @@
             <p class="help-block">Imagem do artigo.</p>
         </div>
 
-        <div class="form-group"  ng-if="isadmin()" >
+        <div class="form-group" ng-if="isadmin()">
             <label>Approved</label>
-            <input type="checkbox" ng-model="article.Approved" />
+            <input type="checkbox" ng-model="article.Approved"/>
 
         </div>
         <button type="submit" ng-click="submit()" class="btn btn-default">Submit</button>

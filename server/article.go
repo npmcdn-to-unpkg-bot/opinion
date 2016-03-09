@@ -237,6 +237,8 @@ func (ArticlesController) GetId(c *gin.Context) {
 			return err
 		}
 
+		a.Id=id;
+
 		return err
 	})
 	if err != nil {

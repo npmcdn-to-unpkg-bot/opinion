@@ -60,7 +60,7 @@ func main() {
 
 	auth := router.Group("/auth")
 	{
-		auth.POST("/login", AngularSignIn(db, (&Publisher{}).FindUser, NewSha512Password, time.Hour*48))
+		auth.POST("/login", AngularSignIn(db, (&Publisher{}).FindUser, NewSha512Password, time.Hour * 48))
 	}
 
 	// By default it serves on :8080 unless a

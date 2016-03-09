@@ -29,10 +29,10 @@ type Publisher struct {
 	Password string
 	Salt     string
 
-	Name  string
-	Image *Base64Img
-	Admin bool
-	Date  time.Time
+	Name     string
+	Image    *Base64Img
+	Admin    bool
+	Date     time.Time
 }
 
 /*

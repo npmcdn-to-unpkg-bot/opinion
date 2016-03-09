@@ -1,3 +1,8 @@
+<div class="listViewModes" style="">
+    <a href="#" id="listStdViewButton" class="listViewModeButton std pressed " ng-class="std" ng-click="setstd()">&nbsp;</a>
+    <a href="#" id="listGridViewButton" class="listViewModeButton grid "  ng-class="grid" ng-click="setgrid()">&nbsp;</a>
+</div>
+<div class="title">Opinião</div>
 <div class="xResults" style="">
     <div class="newsListWrapper">
         <ul class="newsList">
@@ -5,15 +10,20 @@
             <li ng-repeat="article in articles" ng-class="{first : $first}" class="item">
                 <div class="itemHeader">
                     <div class="image">
-                        <a href="http://www.azorestv.com/index.php/p/54/opiniao/#/articles/view/{{article.Id}}"><img data-ng-src="data:{{article.Image.Filetype}};base64,{{article.Image.Base64}}" alt="{{article.Title}}" style=""></a>
+                        <a href="http://www.azorestv.com/index.php/p/54/opiniao/#/articles/view/{{article.Id}}"><img
+                                data-ng-src="data:{{article.Image.Filetype}};base64,{{article.Image.Base64}}"
+                                alt="{{article.Title}}" style=""></a>
                     </div>
-                    <div class="title"><a href="http://www.azorestv.com/index.php/p/54/opiniao/#/articles/view/{{article.Id}}">{{article.Title}} </a></div>
-                    <div class="user">De: <a href="http://www.azorestv.com/index.php/portal/user/301/vitec/">Vitec</a></div>
-                    <div class="date">{{article.Date | amParse:'YYYY.MM.DD HH:mm:ss'}}</div>
+                    <div class="title"><a
+                            href="http://www.azorestv.com/index.php/p/54/opiniao/#/articles/view/{{article.Id}}">{{article.Title}} </a>
+                    </div>
+                    <div class="user">De: <a href="#">{{article.PublisherName}}</a></div>
+                    <div class="date">{{article.Date}}</div>
                 </div>
                 <div class="description">
                     {{article.Description}}
-                    <a href="http://www.azorestv.com/index.php/p/54/opiniao/#/articles/view/{{article.Id}}">Leia mais</a>
+                    <a href="http://www.azorestv.com/index.php/p/54/opiniao/#/articles/view/{{article.Id}}">Leia
+                        mais</a>
                 </div>
             </li>
 

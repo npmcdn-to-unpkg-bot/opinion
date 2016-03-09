@@ -11,9 +11,9 @@ import (
 var db *bolt.DB
 
 var (
-	ArticlesBucket   = []byte("Articles")
+	ArticlesBucket = []byte("Articles")
 	PublishersBucket = []byte("Publisher")
-	SessionsBucket   = []byte("Sessions")
+	SessionsBucket = []byte("Sessions")
 	Sessions         *bolt.Bucket
 )
 
