@@ -2,25 +2,25 @@
 
 angular.module('myApp.Auth', ['ngRoute'])
 
-.config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/auth/login', {
-        templateUrl: 'auth/login.html',
-        controller: 'Login'
-      });
-}])
+    .config(['$routeProvider', function ($routeProvider) {
+        $routeProvider.when('/auth/login', {
+            templateUrl: 'auth/login.html',
+            controller: 'Login'
+        });
+    }])
 
-.controller('Login', ['$scope','$http','$location',function($scope,$http,$location) {
-        $scope.auth={};
+    .controller('Login', ['$scope', '$http', '$location', function ($scope, $http, $location) {
+        $scope.auth = {};
 
-        $scope.submit= function () {
+        $scope.submit = function () {
             $http({
                 method: 'POST',
-                url:  window.hostname+'auth/login',
-                data:$scope.auth
+                url: window.hostname + 'auth/login',
+                data: $scope.auth
             }).then(function successCallback(response) {
                 console.log(response.data)
 
-                localStorage.setObject("user",response.data)
+                localStorage.setObject("user", response.data)
 
                 $location.path('/')
                 // this callback will be called asynchronously
@@ -34,5 +34,4 @@ angular.module('myApp.Auth', ['ngRoute'])
         }
 
 
-
-}]);
+    }]);

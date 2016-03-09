@@ -1,5 +1,4 @@
-
-<table class="table"  ng-if="isadmin()" >
+<table class="table" ng-if="isadmin()">
     <thead>
     <tr>
         <th>Nome</th>
@@ -14,9 +13,13 @@
         <td>{{publisher.Name}}</td>
         <td>{{publisher.Email}}</td>
         <td>{{publisher.Admin}}</td>
-        <td><img style="height: 50px" data-ng-src="data:{{publisher.Image.Filetype}};base64,{{publisher.Image.Base64}}"></td>
-        <td><a  href="#/publishers/edit/{{publisher.Id}}" class="btn btn-default glyphicon glyphicon-edit" aria-hidden="true"></a><a  ng-really-message="Are you sure?"
-                                                                                                                                      ng-really-click="delete(publisher.Id)" class="btn btn-default glyphicon glyphicon-remove-circle" aria-hidden="true"></a></td>
+        <td><img style="height: 50px" data-ng-src="data:{{publisher.Image.Filetype}};base64,{{publisher.Image.Base64}}">
+        </td>
+        <td><a href="#/publishers/edit/{{publisher.Id}}" class="btn btn-default glyphicon glyphicon-edit"
+               aria-hidden="true"></a><a ng-really-message="Are you sure?"
+                                         ng-really-click="delete(publisher.Id)"
+                                         class="btn btn-default glyphicon glyphicon-remove-circle"
+                                         aria-hidden="true"></a></td>
     </tr>
     </tbody>
 </table>

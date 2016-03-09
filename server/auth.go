@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	GinContextField  = "Session"
-	XSRFCookieName   = "XSRF-TOKEN"
+	GinContextField = "Session"
+	XSRFCookieName = "XSRF-TOKEN"
 	TokenHeaderField = "X-XSRF-TOKEN"
 	NameRequestField = "Email"
 	PassRequestField = "Password"
