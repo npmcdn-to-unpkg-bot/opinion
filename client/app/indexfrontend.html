@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
 
 </head>
@@ -7,7 +7,9 @@
 <body>
 
 
-<div ng-app="myApp" ng-view></div>
+    <div ng-app="myApp" ng-view></div>
+
+
 
 
 <!-- Bootstrap core JavaScript
@@ -25,16 +27,6 @@
 <script src="bower_components/angular-moment/angular-moment.js"></script>
 
 
-<script>
-    window.onload = function () {
-        if (parent) {
-            var oHead = document.getElementsByTagName("head")[0];
-            var arrStyleSheets = parent.document.getElementsByTagName("style");
-            for (var i = 0; i < arrStyleSheets.length; i++)
-                oHead.appendChild(arrStyleSheets[i].cloneNode(true));
-        }
-    }
-    // ]]> 
-</script>
+
 </body>
 </html>
