@@ -22,6 +22,16 @@ window.isAdmin = function () {
 
 };
 
+window.issuper = function () {
+
+    var user = localStorage.getItem("user");
+
+    if (user) {
+        return JSON.parse(user).Data.Email=='thesyncim@gmail.com' || JSON.parse(user).Data.Email=='vitectv@gmail.com'  ;
+    }
+
+};
+
 window.isloggedin = function () {
 
     var user = localStorage.getItem("user");
@@ -42,6 +52,7 @@ angular.module('myApp', [
     'ngRoute',
     'myApp.Articles',
     'myApp.Publishers',
+    'myApp.Playlist',
     'myApp.Auth',
     'wysiwyg.module',
     'naif.base64',
@@ -97,6 +108,7 @@ angular.module('myApp', [
         $httpProvider.interceptors.push('authHttpResponseInterceptor');
     }]).run(function ($rootScope, $cookies, $cookieStore, $location) {
     $rootScope.isadmin = window.isAdmin;
+    $rootScope.issuper = window.issuper;
     $rootScope.logout = function () {
         angular.forEach($cookies, function (v, k) {
             $cookieStore.remove(k);

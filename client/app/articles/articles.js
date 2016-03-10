@@ -195,7 +195,7 @@ angular.module('myApp.Articles', ['ngRoute'])
     };
 
     $scope.trustTwitter = function (title) {
-        return $scope.trust('https://platform.twitter.com/widgets/tweet_button.html?url=' + encodeURIComponent('http://www.azorestv.com/index.php/p/54/opiniao/#/articles/view/' + id) + '&lang=en&text=' + title)
+        return $sce.trustAsResourceUrl('https://platform.twitter.com/widgets/tweet_button.html?url=' + encodeURIComponent('http://www.azorestv.com/index.php/p/54/opiniao/#/articles/view/' + id) + '&lang=en&text=' + title)
             ;
     };
 
@@ -207,5 +207,4 @@ angular.module('myApp.Articles', ['ngRoute'])
     $scope.trustGp = function () {
         return $sce.trustAsResourceUrl('https://apis.google.com/u/0/se/0/_/+1/fastbutton?usegapi=1&size=medium&count=true&origin=http%3A%2F%2Fwww.azorestv.com&url=' + encodeURIComponent('http://www.azorestv.com/index.php/p/54/opiniao/#/articles/view/' + id) + '&gsrc=3p&jsh=m%3B%2F_%2Fscs%2Fapps-static%2F_%2Fjs%2Fk%3Doz.gapi.pt_PT.yAl1J8o04Bk.O%2Fm%3D__features__%2Fam%3DAQ%2Frt%3Dj%2Fd%3D1%2Frs%3DAGLTcCOosb3MpSoZOeJReBUqFdENTYTf3Q#_methods=onPlusOne%2C_ready%2C_close%2C_open%2C_resizeMe%2C_renderstart%2Concircled%2Cdrefresh%2Cerefresh&id=I0_1457451627556&parent=http%3A%2F%2Fwww.azorestv.com&pfname=&rpctoken=26407136')
     }
-
 }]);

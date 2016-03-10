@@ -58,6 +58,14 @@
                         <li><a href="#/publishers/list">Listar</a></li>
                     </ul>
                 </li>
+                <li class="dropdown"  ng-if="issuper()">
+                    <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Playlist<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#/playlist/list">Ver</a></li>
+                        <li><a href="#/publishers/list">Gerar</a></li>
+                    </ul>
+                </li>
                 <li><a href="#" ng-if="isLoggedIn()" ng-click="logout()">Logout</a></li>
 
             </ul>
@@ -89,6 +97,7 @@
 <script src="/app.js"></script>
 <script src="/articles/articles.js"></script>
 <script src="/publishers/publishers.js"></script>
+<script src="/playlist/playlist.js"></script>
 
 <script src="/auth/auth.js"></script>
 
