@@ -1,0 +1,12 @@
+
+
+
+
+    <form>
+        <label class="control-label"><i class="fa fa-clock-o"></i> Hora Inicio Playlist</label><br>
+        <div class="form-group">
+            <input type="text" class="form-control" size="8" ng-model="StartTime" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
+        </div>
+        <button type="submit" ng-click="updateStartTime(StartTime)" class="btn btn-default">Submit</button>
+        <button type="submit" ng-click="reload()" class="btn btn-default">Restart Now</button>
+    </form>

@@ -15,6 +15,9 @@
     <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="/bower_components/angular-native-datepicker/build/themes/default.css"/>
+
+    <link rel="stylesheet" href="/bower_components/angular-native-datepicker/build/themes/default.time.css"/>
 
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -62,8 +65,8 @@
                     <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">Playlist<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#/playlist/list">Ver</a></li>
-                        <li><a href="#/publishers/list">Gerar</a></li>
+                        <li><a href="#/playlist/list">View</a></li>
+                        <li><a href="#/playlist/settings">Settings</a></li>
                     </ul>
                 </li>
                 <li><a href="#" ng-if="isLoggedIn()" ng-click="logout()">Logout</a></li>
@@ -94,10 +97,16 @@
 <script src="/bower_components/moment/moment.js"></script>
 <script src="/bower_components/angular-moment/angular-moment.js"></script>
 <script src="/bower_components/angular-route/angular-route.js"></script>
+
 <script src="/app.js"></script>
 <script src="/articles/articles.js"></script>
 <script src="/publishers/publishers.js"></script>
 <script src="/playlist/playlist.js"></script>
+<script src="/bower_components/angular-native-datepicker/build/angular-datepicker.js"></script>
+<script src="http://mgcrea.github.io/angular-strap/dist/angular-strap.min.js"></script>
+<script src="http://mgcrea.github.io/angular-strap/dist/angular-strap.tpl.min.js"></script>
+
+
 
 <script src="/auth/auth.js"></script>
 

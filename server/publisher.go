@@ -335,6 +335,18 @@ func (PublisherController) GetId(c *gin.Context) {
 
 }
 
+func (PublisherController) GetImage(c *gin.Context) {
+
+	id := c.Param("id")
+	var p = &Publisher{}
+
+	p.Get(id)
+
+	c.JSON(http.StatusOK, p.Image.Base64)
+
+}
+
+
 func (PublisherController) Delete(c *gin.Context) {
 
 	id := c.Param("id")
