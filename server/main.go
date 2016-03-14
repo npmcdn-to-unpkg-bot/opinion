@@ -30,11 +30,13 @@ func main() {
 		publisher.Any("/create", p.Create)
 		publisher.POST("/edit/:id", p.Edit)
 		publisher.GET("/getid/:id", p.GetId)
-		publisher.GET("/image/:id", p.GetImage)
+
 		publisher.POST("/delete/:id", p.Delete)
 		publisher.GET("/listall", p.ListAll)
 
 	}
+
+	router.GET("/publisher/image/:id", p.GetImage)
 
 	article := router.Group("/article")
 	article.Use(authenticator)
