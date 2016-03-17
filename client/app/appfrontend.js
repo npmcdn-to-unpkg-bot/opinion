@@ -42,6 +42,7 @@ angular.module('myApp', [
     'ngRoute',
     'myApp.Articles',
     'angularMoment',
+    'mgcrea.ngStrap'
 
 
 ]).config(['$routeProvider','$sceProvider', function ($routeProvider,$sceProvider) {

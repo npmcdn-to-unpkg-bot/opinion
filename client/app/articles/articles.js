@@ -81,6 +81,19 @@ angular.module('myApp.Articles', ['ngRoute'])
             $scope.grid = '';
         }
 
+    $scope.getPublisherImage= function (id) {
+
+        var request = new XMLHttpRequest();
+        request.open('GET', window.hostname + 'publisher/image/'+id, false);  // `false` makes the request synchronous
+        request.send(null);
+
+        if (request.status === 200) {
+            console.log(request.responseText)
+          return JSON.parse(request.responseText);
+        }
+
+    }
+
         $scope.setgrid = function () {
             $scope.std = '';
             $scope.grid = 'pressed';

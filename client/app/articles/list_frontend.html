@@ -1,6 +1,7 @@
 <div class="listViewModes" style="">
-    <a href="#" id="listStdViewButton" class="listViewModeButton std pressed " ng-class="std" ng-click="setstd()">&nbsp;</a>
-    <a href="#" id="listGridViewButton" class="listViewModeButton grid "  ng-class="grid" ng-click="setgrid()">&nbsp;</a>
+    <a href="#" id="listStdViewButton" class="listViewModeButton std pressed " ng-class="std" ng-click="setstd()">
+        &nbsp;</a>
+    <a href="#" id="listGridViewButton" class="listViewModeButton grid " ng-class="grid" ng-click="setgrid()">&nbsp;</a>
 </div>
 <div class="title">Opinião</div>
 <div class="xResults" style="">
@@ -17,7 +18,11 @@
                     <div class="title"><a
                             href="http://www.azorestv.com/index.php/p/54/opiniao/#/articles/view/{{article.Id}}">{{article.Title}} </a>
                     </div>
-                    <div class="user">De: <a href="#">{{article.PublisherName}}</a></div>
+                    <div class="user">De: <a href="#" data-trigger="hover" data-type="success" data-html="true"
+                                             data-placement="bottom"
+                                             data-title="<img style='position:absolute;height:110px;'
+                                             src='{{'data:image/jpeg;base64,'+getPublisherImage(article.Publisherid)}}'>"
+                                             bs-tooltip>{{article.PublisherName}}</a></div>
                     <div class="date">{{article.Date}}</div>
                 </div>
                 <div class="description">

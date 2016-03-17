@@ -1,5 +1,20 @@
 'use strict';
+function string2date(strdate) {
 
+    if (strdate.indexOf(":") > -1) {
+        var date = strdate.split(":");
+        var hour, minute;
+        hour = date[0];
+        minute = date[1];
+        var d = new Date();
+        d.setHours(hour);
+        d.setMinutes(minute);
+        return d
+    }
+    return new Date();
+
+
+}
 angular.module('myApp.Playlist', ['ngRoute'])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/playlist/list', {
@@ -16,11 +31,16 @@ angular.module('myApp.Playlist', ['ngRoute'])
 
     }])
 
-    .controller('Playlist', ['$scope', '$http',  function ($scope, $http) {
+    .controller('Playlist', ['$scope', '$http', function ($scope, $http) {
+
+
         $scope.videos = [];
         $scope.Date;
         $scope.StartTime = '';
+        $scope.LiveSettings = {};
+        var afterlive = 0;
         var startv2;
+        var entercase = 0
 
         $scope.format = function (seconds) {
             return new Date(seconds * 1000).toISOString().substr(11, 8);
@@ -29,21 +49,93 @@ angular.module('myApp.Playlist', ['ngRoute'])
         var update = function () {
             $http({
                 method: 'GET',
+                url: 'http://azorestv.com:6789/livestreamset'
+
+            }).then(function successCallback(response) {
+                console.log(response);
+                $scope.LiveSettings = response.data;
+                console.log($scope.LiveSettings)
+                $scope.LiveSettings.StartTime = string2date(response.data.StartTime)
+
+
+                $scope.LiveSettings.EndTime = string2date(response.data.EndTime)
+                $scope.LiveSettings.StartTime.setSeconds(0)
+                $scope.LiveSettings.EndTime.setSeconds(0)
+                // this callback will be called asynchronously
+                // when the response is available
+            }, function errorCallback(response) {
+                console.log(response);
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+
+            $http({
+                method: 'GET',
                 url: 'http://azorestv.com:6789/getplaylist'
             }).then(function successCallback(response) {
                 console.log(response);
                 $scope.videos = [];
-                $scope.StartTime =  response.data.StartTime;
+                $scope.StartTime = response.data.StartTime;
                 console.log(response.data.StartTime);
-                startv2=  new Date($scope.StartTime);
+                startv2 = new Date($scope.StartTime);
 
-
+                var once = 0;
 
                 angular.forEach(response.data.Videos, function (value, key) {
+
                     var res = calcVideoTime(value.Duration);
-                    value.PlayingInterval = res[0];
-                    value.Playing = dateCheck(res[1], res[2], new Date());
-                    this.push(value);
+                    if ($scope.LiveSettings.Activated) {
+                        //if video ends after live start
+                        if (res[2].getTime() > $scope.LiveSettings.StartTime.getTime()) {
+
+                            //enter once
+                            if (afterlive < 1) {
+                                afterlive++;
+                                var cuttime = res[2].getTime() - $scope.LiveSettings.StartTime.getTime()
+                                var stoptime = value.Duration - cuttime/1000
+                                console.log(value.Duration,$scope.LiveSettings.StartTime)
+                                value.Duration = stoptime
+                                res = calcVideoTime(stoptime);
+                                value.PlayingInterval = res[0];
+                                value.Playing = dateCheck(res[1], res[2], new Date());
+                                this.push(value);
+                                sumseconds = (sumseconds + Number(stoptime));
+
+                                var livetime = ($scope.LiveSettings.EndTime.getTime() - $scope.LiveSettings.StartTime.getTime()) / 1000
+                                res = calcVideoTime(livetime);
+                                value = angular.copy(value);
+                                value.PlayingInterval = res[0];
+                                value.Thumbnail='http://www.azorestv.com/uploads/images/clip_410_1428943639_poster.jpg';
+                                value.Title="Live Streaming"
+                                value.Id=25;
+                                value.Duration=livetime
+                                value.Playing = dateCheck(res[1], res[2], new Date());
+
+                                sumseconds = (sumseconds + Number(livetime));
+                                this.push(value);
+
+                                once=1
+
+
+                            }else{
+                                once++
+                            }
+
+                        }
+
+                    }
+
+                    if (once != 1) {
+                        once=2
+
+                        sumseconds = (sumseconds + Number(value.Duration));
+                        value.PlayingInterval = res[0];
+                        value.Playing = dateCheck(res[1], res[2], new Date());
+                        this.push(value);
+
+                    }
+
+
                 }, $scope.videos);
 
                 // this callback will be called asynchronously
@@ -80,7 +172,7 @@ angular.module('myApp.Playlist', ['ngRoute'])
             var datestart = new Date(startv2.getTime() + (sumseconds * 1000));
 
             var dateend = new Date(datestart.getTime() + (seconds) * 1000);
-            sumseconds = (sumseconds + intseconds);
+
             var res = [];
             res[0] = datetoHHMMSS(datestart) + ' - ' + datetoHHMMSS(dateend);
             res[1] = datestart;
@@ -92,18 +184,38 @@ angular.module('myApp.Playlist', ['ngRoute'])
     }]).controller('Settings', ['$scope', '$http', 'toastr', function ($scope, $http, toastr) {
 
 
-    $scope.StartTime='';
+    $scope.StartTime = '';
+    $scope.LiveSettings = {StartLiveTime: new Date(), EndLiveTime: new Date()};
+
     var update = function () {
         $http({
             method: 'GET',
             url: 'http://azorestv.com:6789/starttime'
         }).then(function successCallback(response) {
             console.log(response)
-            $scope.StartTime=string2date(response.data)
+            $scope.StartTime = string2date(response.data)
             console.log(string2date(response.data))
-            toastr.success('Success!', 'Hora de inicio alterada');
-           // $scope.StartTime=response.data.StartTime
 
+            // $scope.StartTime=response.data.StartTime
+
+            // this callback will be called asynchronously
+            // when the response is available
+        }, function errorCallback(response) {
+            console.log(response);
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+        });
+
+        $http({
+            method: 'GET',
+            url: 'http://azorestv.com:6789/livestreamset'
+
+        }).then(function successCallback(response) {
+            console.log(response);
+            $scope.LiveSettings = response.data;
+            console.log($scope.LiveSettings)
+            $scope.LiveSettings.StartTime = string2date(response.data.StartTime)
+            $scope.LiveSettings.EndTime = string2date(response.data.EndTime)
             // this callback will be called asynchronously
             // when the response is available
         }, function errorCallback(response) {
@@ -120,12 +232,12 @@ angular.module('myApp.Playlist', ['ngRoute'])
         return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
     }
 
-    function date2string(date){
-        return pad(date.getHours(),2)+":"+pad(date.getMinutes(),2)
+    function date2string(date) {
+        return pad(date.getHours(), 2) + ":" + pad(date.getMinutes(), 2)
     }
 
-    $scope.reload= function (){
-        console.log("ups")
+    $scope.reload = function () {
+
         $http({
             method: 'POST',
             url: 'http://azorestv.com:6789/reload',
@@ -142,30 +254,54 @@ angular.module('myApp.Playlist', ['ngRoute'])
 
     }
 
-    function string2date(strdate){
 
-        if (strdate.indexOf(":") > -1){
-            var date = strdate.split(":");
-            var   hour,minute;
-            hour=date[0];
-            minute=date[1];
-           var d = new Date();
-            d.setHours(hour);
-            d.setMinutes(minute);
-            return d
-        }
-        return new Date();
+    $scope.updateSettings = function () {
 
+        $http({
+            method: 'POST',
+            url: 'http://azorestv.com:6789/starttime',
+            data: {StartTime: date2string($scope.StartTime)},
+        }).then(function successCallback(response) {
+            console.log(response);
+            toastr.success('Success!', 'Hora de inicio alterada');
+
+            // this callback will be called asynchronously
+            // when the response is available
+        }, function errorCallback(response) {
+            console.log(response);
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+        });
+
+        $http({
+            method: 'POST',
+            url: 'http://azorestv.com:6789/livestreamset',
+            data: {
+                StartTime: date2string($scope.LiveSettings.StartTime),
+                EndTime: date2string($scope.LiveSettings.EndTime),
+                Activated: $scope.LiveSettings.Activated
+            },
+        }).then(function successCallback(response) {
+            toastr.success('Success!', 'Definições Do directo alteradas');
+            console.log(response);
+
+            // this callback will be called asynchronously
+            // when the response is available
+        }, function errorCallback(response) {
+            console.log(response);
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+        });
 
     }
 
 
-    $scope.updateStartTime= function(start){
+    $scope.updateStartTime = function (start) {
         console.log(date2string(start));
         $http({
             method: 'POST',
             url: 'http://azorestv.com:6789/starttime',
-            data:{StartTime:date2string($scope.StartTime)},
+            data: {StartTime: date2string($scope.StartTime)},
         }).then(function successCallback(response) {
             console.log(response);
 
@@ -178,8 +314,6 @@ angular.module('myApp.Playlist', ['ngRoute'])
         });
 
     };
-
-
 
 
 }]);
