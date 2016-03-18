@@ -222,12 +222,11 @@ func genSmilWithLive(ids []Video, startTime string) string {
 	var StartTime time.Time
 
 
-if startTime!=""{
 
-	now.P
+
 	StartTime = now.MustParse(startTime)
 
-}
+
 
 
 	if err != nil {
