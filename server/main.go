@@ -128,6 +128,7 @@ func main() {
 			return &app{Quit: make(chan bool)},nil
 		},
 		AllowRoot:true,
+
 	})
 
 }
