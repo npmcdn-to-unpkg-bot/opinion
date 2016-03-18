@@ -146,7 +146,7 @@ func generatePlalist(videos []Video) []Video {
 				var err error
 				dur, err = getYoutubeVideoDuration(val.YtID)
 				if err != nil {
-					log.Println(stacktrace.Propagate(err, ""))
+					log.Println(stacktrace.Propagate(err, "%s %d",val.YtID,videos[i].Id))
 					continue
 				}
 				videos[i].DurationSeconds = time.Duration(dur) * time.Second
