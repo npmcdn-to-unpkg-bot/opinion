@@ -72,7 +72,7 @@ func calcScheduleDate() string {
 
 	}
 
-	log.Println(strttm)
+	log.Fatalln(strttm)
 
 
 	//startminute := 00
