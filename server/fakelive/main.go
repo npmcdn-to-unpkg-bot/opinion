@@ -7,7 +7,7 @@ import (
 
 	"github.com/carlescere/scheduler"
 	"github.com/gin-gonic/gin"
-	"github.com/itsjamie/gin-cors"
+
 	"github.com/palantir/stacktrace"
 	"sort"
 	"time"
