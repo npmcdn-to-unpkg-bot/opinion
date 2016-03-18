@@ -249,7 +249,7 @@ func genSmilWithLive(ids []Video, startTime string) string {
 		log.Println(err)
 	}
 
-	if startlivestreamtime.Before(startTime){
+	if startlivestreamtime.Before(StartTime){
 		startlivestreamtime=startlivestreamtime.Add(time.Hour*24)
 		endlivestreamtime=endlivestreamtime.Add(time.Hour*24)
 	}
