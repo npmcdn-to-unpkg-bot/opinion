@@ -7,8 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
 	"github.com/thesyncim/opinion/server/fakelive"
-	"gopkg.in/hlandau/easyconfig.v1"
-	"gopkg.in/hlandau/service.v2"
+	"github.com/kardianos/service"
+	"log"
+	"os"
 )
 
 /*
@@ -22,8 +23,7 @@ type app struct {
 	Quit chan bool
 }
 
-func (a *app) Start() error {
-
+func (a *app)run() error{
 	router := gin.Default()
 	router.Use(cors.Middleware(cors.Config{
 		Origins:         "*",
@@ -101,10 +101,18 @@ func (a *app) Start() error {
 
 
 	return manners.ListenAndServe(":9999", router)
+
 }
 
-func (a *app) Stop() error {
+func (a *app) Start(s service.Service) error {
+
+	go a.run()
+	return nil
+}
+
+func (a *app) Stop(s service.Service) error {
 	a.Quit <- true
+
 
 	manners.Close()
 
@@ -115,20 +123,33 @@ type Config struct{}
 
 func main() {
 
-	cfg := Config{}
 
-	(&easyconfig.Configurator{
-		ProgramName: "Azorestv Software",
-	}).ParseFatal(&cfg)
+	svcConfig := &service.Config{
+		Name:        "GoServiceExampleStopPause",
+		DisplayName: "Go Service Example: Stop Pause",
+		Description: "This is an example Go service that pauses on stop.",
+	}
 
-	service.Main(&service.Info{
-		Name: "Azorestv Software",
+	prg:=&app{Quit: make(chan bool)}
+	s, err := service.New(prg, svcConfig)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if len(os.Args) > 1 {
+		err = service.Control(s, os.Args[1])
+		if err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
 
-		NewFunc: func() (service.Runnable, error) {
-			return &app{Quit: make(chan bool)},nil
-		},
-		AllowRoot:true,
-
-	})
+	logger, err := s.Logger(nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = s.Run()
+	if err != nil {
+		logger.Error(err)
+	}
 
 }
