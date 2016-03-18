@@ -72,6 +72,8 @@ func calcScheduleDate() string {
 
 	}
 
+	log.Println(strttm)
+
 
 	//startminute := 00
 	//output format like 2015-04-25 16:00:00
