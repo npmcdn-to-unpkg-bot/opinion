@@ -30,48 +30,6 @@ func RunBackgroundScheduler() {
 	}
 }
 
-/*func main() {
-	work()
-	strttm, _ := getStartTime()
-	var err error
-	j, err = scheduler.Every().Day().At(strttm).Run(func() {
-		work()
-	})
-
-	if err != nil {
-		log.Fatalln(stacktrace.Propagate(err, ""))
-
-	}
-
-	eng := gin.Default()
-	eng.Use(cors.Middleware(cors.Config{
-		Origins:         "*",
-		Methods:         "GET, PUT, POST, DELETE",
-		RequestHeaders:  "Origin, Authorization, Content-Type",
-		ExposedHeaders:  "",
-		MaxAge:          50 * time.Second,
-		Credentials:     true,
-		ValidateHeaders: false,
-	}))
-	eng.GET("getplaylist", HandlerCurrentPlaylist)
-
-	eng.GET("starttime", HandlerGetStartTime)
-	eng.POST("starttime", HandlerSetStartTime)
-
-	eng.GET("livestreamset", HandlerGetLiveStreamSettings)
-	eng.POST("livestreamset", HandlerSetLiveStreamSettings)
-	eng.POST("reload", HandlerReloadNow)
-
-	err = eng.Run(":6789")
-	if err != nil {
-		log.Println(stacktrace.Propagate(err, ""))
-	}
-
-
-
-
-}*/
-
 func work() {
 	err := downloadMissingYoutubeVideos()
 	if err != nil {

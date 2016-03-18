@@ -214,7 +214,14 @@ func genSmilWithLive(ids []Video, startTime string) string {
 			<video src="%s" start="%d" length="%d"/>
 		</playlist>`
 
-	StartTime := now.MustParse(startTime)
+	var StartTime time.Time
+
+
+if startTime!=""{
+	StartTime = now.MustParse(startTime)
+
+}
+
 
 	if err != nil {
 		log.Println(stacktrace.Propagate(err, ""))
