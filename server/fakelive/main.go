@@ -19,6 +19,9 @@ var j *scheduler.Job
 func RunBackgroundScheduler() {
 	work()
 	strttm, _ := getStartTime()
+	if strttm == ""{
+		strttm="00:00"
+	}
 	var err error
 	j, err = scheduler.Every().Day().At(strttm).Run(func() {
 		work()
