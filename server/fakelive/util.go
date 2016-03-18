@@ -66,12 +66,12 @@ func calcNextSchedule() string {
 }
 
 func calcScheduleDate() string {
-	strttm, _ := getStartTime()
-
-	//defaultvalue
-	if strttm==""{
+	strttm, err := getStartTime()
+	if err!=nil{
 		strttm="00:00"
+
 	}
+
 
 	//startminute := 00
 	//output format like 2015-04-25 16:00:00
