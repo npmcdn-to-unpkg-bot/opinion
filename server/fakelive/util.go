@@ -248,6 +248,11 @@ func genSmilWithLive(ids []Video, startTime string) string {
 		endlivestreamtime = time.Time{}
 		log.Println(err)
 	}
+
+	if startlivestreamtime.Before(startTime){
+		startlivestreamtime=startlivestreamtime.Add(time.Hour*24)
+		endlivestreamtime=endlivestreamtime.Add(time.Hour*24)
+	}
 	var once sync.Once
 
 	var onceagain = 0
