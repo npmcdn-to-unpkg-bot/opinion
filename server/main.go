@@ -125,9 +125,9 @@ func main() {
 
 
 	svcConfig := &service.Config{
-		Name:        "GoServiceExampleStopPause",
-		DisplayName: "Go Service Example: Stop Pause",
-		Description: "This is an example Go service that pauses on stop.",
+		Name:        "fakelive",
+		DisplayName: "fakelive and opinion server",
+		Description: "",
 	}
 
 	prg:=&app{Quit: make(chan bool)}
