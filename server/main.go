@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
 	"github.com/thesyncim/opinion/server/fakelive"
+	"github.com/braintree/manners"
 )
 
 func main() {
@@ -82,6 +83,8 @@ func main() {
 
 	// By default it serves on :8080 unless a
 	// PORT environment variable was defined.
-	router.Run(":9999")
+
+
+	manners.ListenAndServe(":9999", router)
 
 }
