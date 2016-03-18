@@ -16,7 +16,7 @@ import (
 var basedir = "/var/www/vhosts/azorestv.com/httpdocs/uploads/movies/yt"
 var j *scheduler.Job
 
-func RunBackgroundScheduler() {
+func RunBackgroundScheduler() *scheduler.Job {
 	work()
 	strttm, _ := getStartTime()
 	if strttm == "" {
@@ -31,6 +31,7 @@ func RunBackgroundScheduler() {
 		log.Fatalln(stacktrace.Propagate(err, ""))
 
 	}
+	return j
 }
 
 func work() {

@@ -7,9 +7,22 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
 	"github.com/thesyncim/opinion/server/fakelive"
+	"gopkg.in/hlandau/easyconfig.v1"
+	"gopkg.in/hlandau/service.v2"
 )
 
-func main() {
+/*
+type Runnable interface {
+	Start() error
+	Stop() error
+}
+*/
+
+type app struct {
+	Quit chan bool
+}
+
+func (a *app) Start() error {
 
 	router := gin.Default()
 	router.Use(cors.Middleware(cors.Config{
@@ -22,34 +35,34 @@ func main() {
 		ValidateHeaders: false,
 	}))
 
-	var p = PublisherController{}
-	var a = ArticlesController{}
+	var publisher = PublisherController{}
+	var articles = ArticlesController{}
 
 	authenticator := AngularAuth(db)
-	publisher := router.Group("/publisher")
+	publisherrouter := router.Group("/publisher")
 	//publisher.Use(authenticator)
 	{
-		publisher.Any("/create", p.Create)
-		publisher.POST("/edit/:id", p.Edit)
-		publisher.GET("/getid/:id", p.GetId)
+		publisherrouter.Any("/create", publisher.Create)
+		publisherrouter.POST("/edit/:id", publisher.Edit)
+		publisherrouter.GET("/getid/:id", publisher.GetId)
 
-		publisher.POST("/delete/:id", p.Delete)
-		publisher.GET("/listall", p.ListAll)
+		publisherrouter.POST("/delete/:id", publisher.Delete)
+		publisherrouter.GET("/listall", publisher.ListAll)
 
 	}
 
-	router.GET("/publisher/image/:id", p.GetImage)
+	router.GET("/publisher/image/:id", publisher.GetImage)
 
 	article := router.Group("/article")
 	article.Use(authenticator)
 	{
-		article.POST("/create", a.Create)
-		article.POST("/edit/:id", a.Edit)
-		article.GET("/getid/:id", a.GetId)
-		article.POST("/delete/:id", a.Delete)
-		article.POST("/publisher/:id", a.GetPublisher)
-		article.GET("/listall", a.ListAll)
-		article.GET("/listfrontend", a.ListFrontend)
+		article.POST("/create", articles.Create)
+		article.POST("/edit/:id", articles.Edit)
+		article.GET("/getid/:id", articles.GetId)
+		article.POST("/delete/:id", articles.Delete)
+		article.POST("/publisher/:id", articles.GetPublisher)
+		article.GET("/listall", articles.ListAll)
+		article.GET("/listfrontend", articles.ListFrontend)
 
 	}
 
@@ -57,9 +70,9 @@ func main() {
 
 	{
 
-		articleFrontEnd.GET("/getid/:id", a.GetId)
+		articleFrontEnd.GET("/getid/:id", articles.GetId)
 
-		articleFrontEnd.GET("/listfrontend", a.ListFrontend)
+		articleFrontEnd.GET("/listfrontend", articles.ListFrontend)
 
 	}
 
@@ -78,11 +91,40 @@ func main() {
 	fake.POST("livestreamset", fakelive.HandlerSetLiveStreamSettings).Use(authenticator)
 	fake.POST("reload", fakelive.HandlerReloadNow).Use(authenticator)
 
-	go fakelive.RunBackgroundScheduler()
+	j := fakelive.RunBackgroundScheduler()
+
+	a.Quit = j.Quit
 
 	// By default it serves on :8080 unless a
 	// PORT environment variable was defined.
 
-	manners.ListenAndServe(":9999", router)
+	return manners.ListenAndServe(":9999", router)
+}
+
+func (a *app) Stop() error {
+	a.Quit <- true
+
+	manners.Close()
+
+	return nil
+}
+
+type Config struct{}
+
+func main() {
+
+	cfg := Config{}
+
+	(&easyconfig.Configurator{
+		ProgramName: "Azorestv Software",
+	}).ParseFatal(&cfg)
+
+	service.Main(&service.Info{
+		Name: "Azorestv Software",
+
+		NewFunc: func() (service.Runnable, error) {
+			return &app{Quit: make(chan bool)},nil
+		},
+	})
 
 }
