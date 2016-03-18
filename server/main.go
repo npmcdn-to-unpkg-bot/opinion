@@ -98,6 +98,8 @@ func (a *app) Start() error {
 	// By default it serves on :8080 unless a
 	// PORT environment variable was defined.
 
+
+
 	return manners.ListenAndServe(":9999", router)
 }
 
@@ -125,6 +127,7 @@ func main() {
 		NewFunc: func() (service.Runnable, error) {
 			return &app{Quit: make(chan bool)},nil
 		},
+		AllowRoot:true,
 	})
 
 }
