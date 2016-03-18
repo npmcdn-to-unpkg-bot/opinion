@@ -1,21 +1,20 @@
 package main
 
 import (
-	"encoding/json"
 	"encoding/base64"
+	"encoding/json"
+	"github.com/disintegration/imaging"
 	"log"
 	"net/http"
 	"time"
-"github.com/disintegration/imaging"
 
+	"bytes"
 	"github.com/boltdb/bolt"
 	"github.com/gin-gonic/gin"
-	"labix.org/v2/mgo/bson"
+	"image"
 	"image/jpeg"
-"strings"
-"image"
-	"bytes"
-
+	"labix.org/v2/mgo/bson"
+	"strings"
 )
 
 type Article struct {
@@ -110,24 +109,23 @@ func (art *Article) Update(a *Article) error {
 type ArticlesController struct {
 }
 
-
-func resizeImage(str *string)(*string,error){
+func resizeImage(str *string) (*string, error) {
 
 	//decode from base64
 	read := base64.NewDecoder(base64.StdEncoding, strings.NewReader(*str))
 	m, _, err := image.Decode(read)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	//resize Image
-	result:=imaging.Resize(m, 600, 0, imaging.Lanczos)
+	result := imaging.Resize(m, 600, 0, imaging.Lanczos)
 
-	out:=bytes.NewBuffer([]byte(""))
+	out := bytes.NewBuffer([]byte(""))
 
-	err=jpeg.Encode(out, result,nil)
-	if err!=nil{
-		return nil,err
+	err = jpeg.Encode(out, result, nil)
+	if err != nil {
+		return nil, err
 	}
 
 	//base64 again
@@ -156,13 +154,13 @@ func (ArticlesController) Create(c *gin.Context) {
 	a.Date = time.Now()
 	a.Updated = time.Now()
 
-	tmp,err:=resizeImage(&a.Image.Base64)
+	tmp, err := resizeImage(&a.Image.Base64)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	a.Image.Base64=*tmp
+	a.Image.Base64 = *tmp
 
 	buf, err := json.Marshal(a)
 	if err != nil {
@@ -196,13 +194,13 @@ func (ArticlesController) Edit(c *gin.Context) {
 		c.Error(err)
 		return
 	}
-	tmp,err:=resizeImage(&a.Image.Base64)
+	tmp, err := resizeImage(&a.Image.Base64)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	a.Image.Base64=*tmp
+	a.Image.Base64 = *tmp
 
 	err = db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(ArticlesBucket)
@@ -244,7 +242,7 @@ func (ArticlesController) GetId(c *gin.Context) {
 			return err
 		}
 
-		a.Id=id;
+		a.Id = id
 
 		return err
 	})

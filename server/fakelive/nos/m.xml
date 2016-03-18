@@ -1,0 +1,44 @@
+<m_config in_preroll='1.0' tc_preroll='1.0' path='MPlaylist'>
+    <video width='1280' height='720' rate='25.0' pixel_format='UYVY' aspect_ratio='16:9' interlace='progressive'/>
+    <audio channels='2' rate='44100' bits='32' track_split='2'>
+        <track source_index='0' mode='enabled' input_channels='0, 1' gain='0.0, 0.0' mute='0, 0' output_channels='0, 1'
+               desc='Track 0'/>
+    </audio>
+    <file in='0.0' interlace='' aspect_ratio='' scale_type='default' format_3d='default' right_eye_video=''
+          external_audio='' external_audio_offset='' img_stub='' img.default_duration='3600.0' img.tone=''
+          no_breaks='false' open_file.max_wait='0' open_url.max_wait='10000' force_mpeg_tc='false' audio_track='0'
+          video_track='0' ts_program='-1' in_preroll='1.0' tc_preroll='1.0' network.buffer_min='1.0'
+          network.buffer_max='10.0' network.buffer_wait_kf='false' network.max_video_gap='80' file.buffer_min='0.0'
+          file.buffer_max='0.0' file.buffer_wait_kf='false' decode='auto' file.max_forward_rate='4.0' duration='3246.04'
+          path='v:\yt\-vPBK3g_0-k.mp4' ref_id='0x08D82248'>
+        <info ts_programs='0' video_tracks='1' audio_tracks='1' streams='2' format='mov,mp4,m4a,3gp,3g2,mj2'
+              format_name='QuickTime / MOV' start_time='0.0' duration='3246.056667' size='1177594404' bitrate='2902215'
+              kbps_avg='356784.895508' kbps_avg_video='332094.791992' kbps_avg_audio='24690.104492' kbps_avg_data='0.0'
+              metadata.major_brand='mp42' metadata.minor_version='0' metadata.compatible_brands='isommp42'
+              metadata.creation_time='2016-02-21 02:59:45' network='false' buffer_video='-0.04' buffer_audio='0.743039'>
+            <video.0 idx='0' codec='h264' codec_name='H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10' codec_tag='avc1'
+                     profile='High' width='1280' height='720' has_b_frames='0' pixel_ar='1:1' display_ar='16:9'
+                     r_frame_rate='25/1' avg_frame_rate='25/1' time_base='1/25' duration_ts='81151' duration='3246.04'
+                     bit_rate='2707769' nb_frames='81151' metadata.language='und' metadata.handler_name='VideoHandler'/>
+            <audio.0 m_audio_track='0' idx='1' codec='aac' codec_name='AAC (Advanced Audio Coding)' codec_tag='mp4a'
+                     format='fltp' sample_rate='44100' channels='2' bits='32' time_base='1/44100'
+                     duration_ts='143151104' duration='3246.057' bit_rate='191999' nb_frames='139796'
+                     metadata.creation_time='2016-02-21 03:00:21' metadata.language='eng'
+                     metadata.handler_name='IsoMedia File Produced by Google, 5-11-2011'/>
+        </info>
+        <video width='1280' height='720' rate='25.0' pixel_format='UYVY' aspect_ratio='16:9' interlace='progressive'/>
+        <audio channels='2' rate='44100' bits='32' track_split='2'>
+            <track source_index='0' mode='enabled' input_channels='0, 1' gain='0.0, 0.0' mute='0, 0'
+                   output_channels='0, 1' desc='Track 0'/>
+        </audio>
+        <object default_name='MFile' default_tracks='0' channels_per_track='0' internal.convert_frame='false'
+                pause.fields='1' external_process='true' scaling_quality='8' crop='' mirror='' overlay_rms='false'
+                overlay_rms.pos='0.1' overlay_rms.color='green' overlay_waveform='false' overlay_waveform.pos='-0.3'
+                overlay_waveform.color='' mdelay.enabled='false' mdelay.live_preview='false'/>
+        <mitem_props stop_in='' stop_out='' pause_in='' pause_out='' schedule_waitstart=''>
+            <transition_in type='' time=''/>
+            <transition_out type='' time=''/>
+        </mitem_props>
+    </file>
+
+</m_config>

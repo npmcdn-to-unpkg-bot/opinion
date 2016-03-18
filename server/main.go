@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
+	"github.com/thesyncim/opinion/server/fakelive"
 )
 
 func main() {
@@ -51,20 +52,33 @@ func main() {
 
 	}
 
-	articlefront := router.Group("/articlef")
+	articleFrontEnd := router.Group("/articlef")
 
 	{
 
-		articlefront.GET("/getid/:id", a.GetId)
+		articleFrontEnd.GET("/getid/:id", a.GetId)
 
-		articlefront.GET("/listfrontend", a.ListFrontend)
+		articleFrontEnd.GET("/listfrontend", a.ListFrontend)
 
 	}
 
 	auth := router.Group("/auth")
 	{
-		auth.POST("/login", AngularSignIn(db, (&Publisher{}).FindUser, NewSha512Password, time.Hour * 48))
+		auth.POST("/login", AngularSignIn(db, (&Publisher{}).FindUser, NewSha512Password, time.Hour*48))
 	}
+
+	fake := router.Group("/fakelive")
+
+	fake.GET("getplaylist", fakelive.HandlerCurrentPlaylist)
+
+	fake.GET("starttime", fakelive.HandlerGetStartTime)
+	fake.POST("starttime", fakelive.HandlerSetStartTime).Use(authenticator)
+
+	fake.GET("livestreamset", fakelive.HandlerGetLiveStreamSettings)
+	fake.POST("livestreamset", fakelive.HandlerSetLiveStreamSettings).Use(authenticator)
+	fake.POST("reload", fakelive.HandlerReloadNow).Use(authenticator)
+
+	go fakelive.RunBackgroundScheduler()
 
 	// By default it serves on :8080 unless a
 	// PORT environment variable was defined.

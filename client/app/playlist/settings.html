@@ -3,22 +3,22 @@
 
 
     <form>
-        <label class="control-label"><i class="fa fa-clock-o"></i> Hora Inicio Playlist</label><br>
+        <label class="control-label"><i class="fa fa-clock-o"></i> Hora Inicio Playlist GMT</label><br>
         <div class="form-group">
             <input type="text" class="form-control" size="8" ng-model="StartTime" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
         </div>
 
-        <label class="control-label"><i class="fa fa-clock-o"></i> Incluir Directo</label><br>
+        <label class="control-label">Incluir Directo</label><br>
         <div class="form-group">
             <input type="checkbox" ng-model="LiveSettings.Activated">
         </div>
 
-        <label class="control-label" ng-if="LiveSettings.Activated"><i class="fa fa-clock-o"></i> Hora Inicio Directo</label><br>
+        <label class="control-label" ng-if="LiveSettings.Activated"><i class="fa fa-clock-o"></i> Hora Inicio Directo GMT</label><br>
         <div class="form-group"  ng-if="LiveSettings.Activated">
             <input type="text" class="form-control" size="8" ng-model="LiveSettings.StartTime" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
         </div>
 
-        <label class="control-label"  ng-if="LiveSettings.Activated"> Hora Fim Directo</label><br>
+        <label class="control-label"  ng-if="LiveSettings.Activated"> Hora Fim Directo GMT</label><br>
         <div class="form-group"  ng-if="LiveSettings.Activated">
             <input type="text" class="form-control" size="8" ng-model="LiveSettings.EndTime" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
         </div>
