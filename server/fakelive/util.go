@@ -68,6 +68,11 @@ func calcNextSchedule() string {
 func calcScheduleDate() string {
 	strttm, _ := getStartTime()
 
+	//defaultvalue
+	if strttm==""{
+		strttm="00:00"
+	}
+
 	//startminute := 00
 	//output format like 2015-04-25 16:00:00
 	now := time.Now()
@@ -218,6 +223,8 @@ func genSmilWithLive(ids []Video, startTime string) string {
 
 
 if startTime!=""{
+
+	now.P
 	StartTime = now.MustParse(startTime)
 
 }
