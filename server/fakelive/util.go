@@ -67,17 +67,14 @@ func calcNextSchedule() string {
 
 func calcScheduleDate() string {
 	strttm, err := getStartTime()
-	if err!=nil{
-		strttm="00:00"
+	if err != nil {
+		strttm = "00:00"
 
 	}
 
-	if strttm==""{
-		strttm="00:00"
+	if strttm == "" {
+		strttm = "00:00"
 	}
-
-
-
 
 	//startminute := 00
 	//output format like 2015-04-25 16:00:00
@@ -227,13 +224,7 @@ func genSmilWithLive(ids []Video, startTime string) string {
 
 	var StartTime time.Time
 
-
-
-
 	StartTime = now.MustParse(startTime)
-
-
-
 
 	if err != nil {
 		log.Println(stacktrace.Propagate(err, ""))
@@ -247,14 +238,14 @@ func genSmilWithLive(ids []Video, startTime string) string {
 		log.Println(err)
 	}
 
-	startlivestreamtime,err := now.Parse(liveStream.StartTime)
+	startlivestreamtime, err := now.Parse(liveStream.StartTime)
 	if err != nil {
 		startlivestreamtime = time.Time{}
 		log.Println(err)
 	}
-	endlivestreamtime,err := now.Parse(liveStream.EndTime)
+	endlivestreamtime, err := now.Parse(liveStream.EndTime)
 	if err != nil {
-		endlivestreamtime= time.Time{}
+		endlivestreamtime = time.Time{}
 		log.Println(err)
 	}
 	var once sync.Once

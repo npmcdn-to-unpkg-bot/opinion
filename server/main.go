@@ -3,10 +3,10 @@ package main
 import (
 	"time"
 
+	"github.com/braintree/manners"
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
 	"github.com/thesyncim/opinion/server/fakelive"
-	"github.com/braintree/manners"
 )
 
 func main() {
@@ -73,9 +73,8 @@ func main() {
 	fake.GET("getplaylist", fakelive.HandlerCurrentPlaylist)
 
 	fake.GET("starttime", fakelive.HandlerGetStartTime)
-	fake.POST("starttime", fakelive.HandlerSetStartTime).Use(authenticator)
-
 	fake.GET("livestreamset", fakelive.HandlerGetLiveStreamSettings)
+	fake.POST("starttime", fakelive.HandlerSetStartTime).Use(authenticator)
 	fake.POST("livestreamset", fakelive.HandlerSetLiveStreamSettings).Use(authenticator)
 	fake.POST("reload", fakelive.HandlerReloadNow).Use(authenticator)
 
@@ -83,7 +82,6 @@ func main() {
 
 	// By default it serves on :8080 unless a
 	// PORT environment variable was defined.
-
 
 	manners.ListenAndServe(":9999", router)
 

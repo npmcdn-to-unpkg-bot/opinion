@@ -49,7 +49,7 @@ angular.module('myApp.Playlist', ['ngRoute'])
         var update = function () {
             $http({
                 method: 'GET',
-                url: 'http://azorestv.com:6789/livestreamset'
+                url: window.hostname + 'fakelive/livestreamset'
 
             }).then(function successCallback(response) {
                 console.log(response);
@@ -71,7 +71,7 @@ angular.module('myApp.Playlist', ['ngRoute'])
 
             $http({
                 method: 'GET',
-                url: 'http://azorestv.com:6789/getplaylist'
+                url: window.hostname + 'fakelive/getplaylist'
             }).then(function successCallback(response) {
                 console.log(response);
                 $scope.videos = [];
@@ -190,7 +190,7 @@ angular.module('myApp.Playlist', ['ngRoute'])
     var update = function () {
         $http({
             method: 'GET',
-            url: 'http://azorestv.com:6789/starttime'
+            url: window.hostname + 'fakelive/starttime'
         }).then(function successCallback(response) {
             console.log(response)
             $scope.StartTime = string2date(response.data)
@@ -208,7 +208,7 @@ angular.module('myApp.Playlist', ['ngRoute'])
 
         $http({
             method: 'GET',
-            url: 'http://azorestv.com:6789/livestreamset'
+            url: window.hostname + 'fakelive/livestreamset'
 
         }).then(function successCallback(response) {
             console.log(response);
@@ -240,7 +240,7 @@ angular.module('myApp.Playlist', ['ngRoute'])
 
         $http({
             method: 'POST',
-            url: 'http://azorestv.com:6789/reload',
+            url: window.hostname + 'fakelive/reload',
         }).then(function successCallback(response) {
             toastr.success('Success!', 'servidor reiniciado');
             console.log(response);
@@ -259,7 +259,7 @@ angular.module('myApp.Playlist', ['ngRoute'])
 
         $http({
             method: 'POST',
-            url: 'http://azorestv.com:6789/starttime',
+            url: window.hostname + 'fakelive/starttime',
             data: {StartTime: date2string($scope.StartTime)},
         }).then(function successCallback(response) {
             console.log(response);
@@ -275,7 +275,7 @@ angular.module('myApp.Playlist', ['ngRoute'])
 
         $http({
             method: 'POST',
-            url: 'http://azorestv.com:6789/livestreamset',
+            url: window.hostname + 'fakelive/livestreamset',
             data: {
                 StartTime: date2string($scope.LiveSettings.StartTime),
                 EndTime: date2string($scope.LiveSettings.EndTime),
@@ -300,7 +300,7 @@ angular.module('myApp.Playlist', ['ngRoute'])
         console.log(date2string(start));
         $http({
             method: 'POST',
-            url: 'http://azorestv.com:6789/starttime',
+            url: window.hostname + 'fakelive/starttime',
             data: {StartTime: date2string($scope.StartTime)},
         }).then(function successCallback(response) {
             console.log(response);
