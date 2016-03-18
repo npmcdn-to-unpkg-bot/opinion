@@ -244,11 +244,19 @@ func genSmilWithLive(ids []Video, startTime string) string {
 
 	liveStream, err := GetLiveStreamSettings()
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 	}
 
-	startlivestreamtime := now.MustParse(liveStream.StartTime)
-	endlivestreamtime := now.MustParse(liveStream.EndTime)
+	startlivestreamtime,err := now.Parse(liveStream.StartTime)
+	if err != nil {
+		startlivestreamtime = time.Time{}
+		log.Println(err)
+	}
+	endlivestreamtime,err := now.Parse(liveStream.EndTime)
+	if err != nil {
+		endlivestreamtime= time.Time{}
+		log.Println(err)
+	}
 	var once sync.Once
 
 	var onceagain = 0
