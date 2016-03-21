@@ -10,6 +10,8 @@ import (
 	"github.com/kardianos/service"
 	"log"
 	"os"
+
+	"github.com/thesyncim/opinion/server/sstream"
 )
 
 /*
@@ -90,6 +92,12 @@ func (a *app)run() error{
 	fake.POST("starttime", fakelive.HandlerSetStartTime).Use(authenticator)
 	fake.POST("livestreamset", fakelive.HandlerSetLiveStreamSettings).Use(authenticator)
 	fake.POST("reload", fakelive.HandlerReloadNow).Use(authenticator)
+
+
+	tokens:=router.Group("/tokens")
+	sstream.RegisterTokenController(tokens)
+	clients:=router.Group("/clients")
+	sstream.RegisterClientController(clients)
 
 	j := fakelive.RunBackgroundScheduler()
 
