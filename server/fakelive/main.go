@@ -87,7 +87,9 @@ func HandlerCurrentPlaylist(c *gin.Context) {
 
 func HandlerCurrentSmilPlaylist(c *gin.Context) {
 
-	c.JSON(200, GetCurrentSmilPlaylist())
+
+c.Writer.WriteString(GetCurrentSmilPlaylist())
+
 
 }
 
