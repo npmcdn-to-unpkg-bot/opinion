@@ -171,6 +171,7 @@ func (c *Token)GetAll() ([]Token,error ){
 }
 
 func (t *Token)Update() error {
+	t.ClientName=new(Client).Get(t.ClientId).Name
 	return boltdb.Update(func(tx *bolt.Tx) error {
 		// Retrieve the users bucket.
 		// This should be created when the DB is first opened.
