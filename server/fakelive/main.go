@@ -53,6 +53,8 @@ func work() {
 
 	smil := genSmilWithLive(videos, calcScheduleDate())
 
+	SaveCurrentSmilPlaylist(smil)
+
 	s, err := os.Create("/var/www/vhosts/azorestv.com/httpdocs/uploads/movies/streamschedule.smil")
 	if err != nil {
 		log.Fatalln(stacktrace.Propagate(err, ""))
@@ -82,6 +84,13 @@ func HandlerCurrentPlaylist(c *gin.Context) {
 	c.JSON(200, GetCurrentPlaylist())
 
 }
+
+func HandlerCurrentSmilPlaylist(c *gin.Context) {
+
+	c.JSON(200, GetCurrentSmilPlaylist())
+
+}
+
 
 func HandlerGetStartTime(c *gin.Context) {
 

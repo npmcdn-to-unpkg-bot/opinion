@@ -1,0 +1,24 @@
+<table class="table" ng-if="isadmin()">
+    <thead>
+    <tr>
+        <th>Token</th>
+        <th>RTMP url</th>
+        <th>Protected Stream</th>
+        <th>Expire Token</th>
+        <th>Opções</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="token in tokens">
+        <td>{{token.Id}}</td>
+        <td>rtmp://azorestv.com/clients/{{token.Id}}</td>
+        <td>{{token.StreamName}}</td>
+        <td>{{token.Expire}}</td>
+        <td><a href="#/tokens/edit/{{token.Id}}" class="btn btn-default glyphicon glyphicon-edit"
+               aria-hidden="true"></a><a ng-really-message="Are you sure?"
+                                         ng-really-click="delete(token.Id)"
+                                         class="btn btn-default glyphicon glyphicon-remove-circle"
+                                         aria-hidden="true"></a></td>
+    </tr>
+    </tbody>
+</table>

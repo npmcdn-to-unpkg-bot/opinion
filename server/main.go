@@ -86,6 +86,7 @@ func (a *app)run() error{
 	fake := router.Group("/fakelive")
 
 	fake.GET("getplaylist", fakelive.HandlerCurrentPlaylist)
+	fake.GET("getsmilplaylist", fakelive.HandlerCurrentSmilPlaylist)
 
 	fake.GET("starttime", fakelive.HandlerGetStartTime)
 	fake.GET("livestreamset", fakelive.HandlerGetLiveStreamSettings)

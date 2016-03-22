@@ -69,6 +69,16 @@
                         <li><a href="#/playlist/settings">Settings</a></li>
                     </ul>
                 </li>
+                <li class="dropdown"  ng-if="issuper()">
+                    <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">Clients<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#/clients/create">Adicionar</a></li>
+                        <li><a href="#/clients/list">Listar</a></li>
+                        <li><a href="#/tokens/create">Create Tokens</a></li>
+                        <li><a href="#/tokens/list">Tokens</a></li>
+                    </ul>
+                </li>
                 <li><a href="#" ng-if="isLoggedIn()" ng-click="logout()">Logout</a></li>
 
             </ul>
@@ -102,6 +112,7 @@
 <script src="/articles/articles.js"></script>
 <script src="/publishers/publishers.js"></script>
 <script src="/playlist/playlist.js"></script>
+<script src="/clients/clients.js"></script>
 <script src="/bower_components/angular-native-datepicker/build/angular-datepicker.js"></script>
 <script src="http://mgcrea.github.io/angular-strap/dist/angular-strap.min.js"></script>
 <script src="http://mgcrea.github.io/angular-strap/dist/angular-strap.tpl.min.js"></script>

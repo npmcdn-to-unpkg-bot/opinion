@@ -1,0 +1,22 @@
+<div class="row" ng-if="isadmin()">
+    <form>
+        <div class="form-group">
+            <label for="inputTitle">Protected Stream Name</label>
+            <input type="text" class="form-control" id="inputTitle" placeholder="Name" ng-model="token.StreamName">
+        </div>
+        <div class="form-group">
+            <label for="client">Client</label>
+            <br>
+            <select name="singleSelect" id="client" ng-model="token.ClientId">
+                <option value="{{client.Id}}"  ng-repeat="client in clients">{{client.Name}}</option> <!-- not selected / blank option -->
+            </select>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error': datepickerForm.date.$invalid}">
+            <label class="control-label"><i class="fa fa-calendar"></i> End Date <small></small></label>
+            <input type="text" class="form-control" ng-model="token.Expire" name="date" bs-datepicker>
+        </div>
+
+        <button type="submit" ng-click="submit()" class="btn btn-default">Submit</button>
+    </form>
+</div>

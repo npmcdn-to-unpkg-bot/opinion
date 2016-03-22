@@ -16,6 +16,8 @@ var (
 	boltdb          *bolt.DB
 	PlaylistBucket  = []byte("Playlist")
 	PlaylistKey     = []byte("playlist")
+	PlaylistSmilKey     = []byte("playlistSmil")
+
 	StartTimeKey    = []byte("startTime")
 	LiveSettingsKey = []byte("LiveSettings")
 	YTVideosBucket  = []byte("Youtube")
@@ -121,6 +123,46 @@ func GetCurrentPlaylist() *Playlist {
 	}
 
 	return &playlist
+}
+func SaveCurrentSmilPlaylist(smil string) error {
+
+	return boltdb.Update(func(tx *bolt.Tx) error {
+		// Retrieve the users bucket.
+		// This should be created when the DB is first opened.
+		b := tx.Bucket(PlaylistBucket)
+
+		// Generate ID for the user.
+		// This returns an error only if the Tx is closed or not writeable.
+		// That can't happen in an Update() call so I ignore the error check.
+
+		// Marshal vids data into bytes.
+
+
+		// Persist bytes to users bucket.
+		return b.Put(PlaylistSmilKey, []byte(smil))
+	})
+}
+
+
+func GetCurrentSmilPlaylist() string {
+
+	var smil string
+
+	err := boltdb.View(func(tx *bolt.Tx) error {
+		// Assume bucket exists and has keys
+		b := tx.Bucket(PlaylistBucket)
+
+		smil = b.Get(PlaylistSmilKey)
+
+
+		return nil
+	})
+	if err != nil {
+		log.Println(stacktrace.Propagate(err, ""))
+		return nil
+	}
+
+	return smil
 }
 
 func SetStartTime(st string) error {

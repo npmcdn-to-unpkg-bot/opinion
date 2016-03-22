@@ -1,0 +1,21 @@
+<table class="table" ng-if="isadmin()">
+    <thead>
+    <tr>
+        <th>Nome</th>
+        <th>Email</th>
+
+        <th>Opções</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="client in clients">
+        <td>{{client.Name}}</td>
+        <td>{{client.Email}}</td>
+        <td><a href="#/clients/edit/{{client.Id}}" class="btn btn-default glyphicon glyphicon-edit"
+               aria-hidden="true"></a><a ng-really-message="Are you sure?"
+                                         ng-really-click="delete(client.Id)"
+                                         class="btn btn-default glyphicon glyphicon-remove-circle"
+                                         aria-hidden="true"></a></td>
+    </tr>
+    </tbody>
+</table>
