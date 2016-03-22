@@ -146,7 +146,7 @@ func SaveCurrentSmilPlaylist(smil string) error {
 
 func GetCurrentSmilPlaylist() string {
 
-	var smil string
+	var smil []byte
 
 	err := boltdb.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
@@ -159,10 +159,10 @@ func GetCurrentSmilPlaylist() string {
 	})
 	if err != nil {
 		log.Println(stacktrace.Propagate(err, ""))
-		return nil
+		return ""
 	}
 
-	return smil
+	return string(smil)
 }
 
 func SetStartTime(st string) error {
