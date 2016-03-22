@@ -121,12 +121,14 @@ func (c *Client)GetAll() ([]Client,error ){
 type Token struct {
 	Id         string
 	ClientId   string
+	ClientName string
 	StreamName string
 	Expire     time.Time
 }
 
 func (t *Token)Save() error {
 	t.Id = newID()
+	t.ClientName=new(Client).Get(t.ClientId).Name
 	return boltdb.Update(func(tx *bolt.Tx) error {
 		// Retrieve the users bucket.
 		// This should be created when the DB is first opened.
