@@ -5,6 +5,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/boltdb/bolt"
 
+	"log"
 )
 
 type SecureStreamPlugin struct {
@@ -21,7 +22,8 @@ func NewSecureStreamPlugin(tokenURL, clientURL string, authenticator iris.Handle
 
 	err := createBoltBuckets()
 	if err != nil {
-		return err
+		log.Fatalln(err)
+
 	}
 	return &SecureStreamPlugin{
 		TokenBaseUrl:tokenURL,

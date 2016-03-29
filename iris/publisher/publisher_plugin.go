@@ -4,6 +4,7 @@ package publisher
 import (
 	"github.com/kataras/iris"
 	"github.com/boltdb/bolt"
+	"log"
 )
 
 type PublisherPlugin struct {
@@ -17,7 +18,7 @@ func NewPublisherPlugin(baseURL string, authenticator iris.HandlerFunc,dbb *bolt
 	db=dbb
 	err:=createBoltBuckets()
 	if err!=nil{
-		return err
+		log.Fatalln(err)
 	}
 	return &PublisherPlugin{
 		BaseUrl:             baseURL,
