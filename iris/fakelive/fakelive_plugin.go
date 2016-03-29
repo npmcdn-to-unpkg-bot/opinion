@@ -15,6 +15,9 @@ type FakelivePlugin struct {
 
 func NewFakelivePlugin(baseURL string, authenticator iris.HandlerFunc, dbb *bolt.DB) *FakelivePlugin {
 	db=dbb
+	if db==nil{
+		panic("why??")
+	}
 	return &FakelivePlugin{
 		BaseUrl:            baseURL,
 		Authenticator:      authenticator,
