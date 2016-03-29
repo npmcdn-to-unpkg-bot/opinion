@@ -15,6 +15,10 @@ type PublisherPlugin struct {
 
 func NewPublisherPlugin(baseURL string, authenticator iris.HandlerFunc,dbb *bolt.DB) *PublisherPlugin {
 	db=dbb
+	err:=createBoltBuckets()
+	if err!=nil{
+		return err
+	}
 	return &PublisherPlugin{
 		BaseUrl:             baseURL,
 		Authenticator:       authenticator,
@@ -28,10 +32,7 @@ func (i *PublisherPlugin) Activate(container iris.IPluginContainer) error {
 	// use the container if you want to register other plugins to the server, yes it's possible a plugin can registers other plugins too.
 	// here we set the container in order to use it's printf later at the PostListen.
 
-	err:=createBoltBuckets()
-	if err!=nil{
-		return err
-	}
+
 	i.container = container
 	return nil
 }

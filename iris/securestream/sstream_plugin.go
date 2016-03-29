@@ -18,6 +18,11 @@ type SecureStreamPlugin struct {
 
 func NewSecureStreamPlugin(tokenURL, clientURL string, authenticator iris.HandlerFunc,dbb *bolt.DB) *SecureStreamPlugin {
 	db=dbb
+
+	err := createBoltBuckets()
+	if err != nil {
+		return err
+	}
 	return &SecureStreamPlugin{
 		TokenBaseUrl:tokenURL,
 		ClientBaseUrl:clientURL,
@@ -34,12 +39,6 @@ func (i *SecureStreamPlugin) Activate(container iris.IPluginContainer) error {
 	// use the container if you want to register other plugins to the server, yes it's possible a plugin can registers other plugins too.
 	// here we set the container in order to use it's printf later at the PostListen.
 	i.container = container
-
-	var err error
-	err = createBoltBuckets()
-	if err != nil {
-		return err
-	}
 
 	return nil
 }
