@@ -33,7 +33,6 @@ func (i *PublisherPlugin) Activate(container iris.IPluginContainer) error {
 	// use the container if you want to register other plugins to the server, yes it's possible a plugin can registers other plugins too.
 	// here we set the container in order to use it's printf later at the PostListen.
 
-
 	i.container = container
 	return nil
 }
@@ -65,5 +64,7 @@ func (i *PublisherPlugin) PreListen(s *iris.Station) {
 	pub.Post("/delete/:id", i.Authenticator, i.PublisherController.Delete)
 	pub.Get("/listall", i.PublisherController.ListAll)
 	pub.Get("/publisher/image/:id", i.PublisherController.GetImage)
+
+	i.container.Printf("Plugin routes registereds  %+v",pub )
 
 }
