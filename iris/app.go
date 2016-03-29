@@ -8,9 +8,11 @@ import (
 	"github.com/thesyncim/opinion/iris/article"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/plugins/iriscontrol"
+
 	"github.com/kardianos/service"
 	"time"
 	"github.com/boltdb/bolt"
+	"log"
 )
 
 type app struct {
@@ -36,7 +38,7 @@ func (a *app)run() error{
 	i:=iris.Custom(options)
 
 	i.Plugin(publisher.NewPublisherPlugin("/fakelive",authenticator,db))
-	i.Plugin(article.NewArticlesPlugin("/articles",authenticator,db))
+	i.Plugin(article.NewArticlesPlugin("/article",authenticator,db))
 	i.Plugin(securestream.NewSecureStreamPlugin("/tokens","/clients",authenticator,db))
 	i.Plugin(fakelive.NewFakelivePlugin("/fakelive",authenticator,db))
 	i.Post("/auth/login",publisher.AngularSignIn(db, (&publisher.Publisher{}).FindUser, publisher.NewSha512Password, time.Hour*48))
@@ -44,7 +46,11 @@ func (a *app)run() error{
 	opts.Port=5555
 	opts.Users=map[string]string{}
 	opts.Users["thesyncim"]="Kirk1zodiak"
-	i.Plugin(iriscontrol.New(opts))
+	err=i.Plugin(iriscontrol.New(opts))
+	if err!=nil{
+		log.Fatalln(err)
+	}
+
 
 	j := fakelive.RunBackgroundScheduler()
 	a.Quit = j.Quit
