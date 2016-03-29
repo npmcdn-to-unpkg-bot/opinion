@@ -38,11 +38,11 @@ func (i *ArticlesPlugin) Activate(container iris.IPluginContainer) error {
 }
 
 func (i ArticlesPlugin) GetName() string {
-	return "Fakelive"
+	return "Articles Opinion"
 }
 
 func (i ArticlesPlugin) GetDescription() string {
-	return "Azorestv Fakelive Manager"
+	return "Articles Opinion Manager"
 }
 
 //

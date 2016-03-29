@@ -10,14 +10,13 @@ type Config struct{}
 
 func main() {
 
-
 	svcConfig := &service.Config{
 		Name:        "fakelive",
 		DisplayName: "fakelive and opinion server",
 		Description: "",
 	}
 
-	prg:=&app{Quit: make(chan bool)}
+	prg := &app{Quit: make(chan bool)}
 	s, err := service.New(prg, svcConfig)
 	if err != nil {
 		log.Fatal(err)
