@@ -25,21 +25,31 @@ func (a *app)run() error{
 	}
 	authenticator :=publisher.AngularAuth(db)
 
-	iris.Plugin(publisher.NewPublisherPlugin("/fakelive",authenticator,db))
-	iris.Plugin(article.NewArticlesPlugin("/articles",authenticator,db))
-	iris.Plugin(securestream.NewSecureStreamPlugin("/tokens","/clients",authenticator,db))
-	iris.Plugin(fakelive.NewFakelivePlugin("/fakelive",authenticator,db))
-	iris.Post("/auth/login",publisher.AngularSignIn(db, (&publisher.Publisher{}).FindUser, publisher.NewSha512Password, time.Hour*48))
+	options := iris.StationOptions{
+		Profile:            true,
+		ProfilePath:        iris.DefaultProfilePath,
+		Cache:              true,
+		CacheMaxItems:      0,
+		CacheResetDuration: 5 * time.Minute,
+		PathCorrection:     true, //explanation at the end of this chapter
+	}
+	i:=iris.Custom(options)
+
+	i.Plugin(publisher.NewPublisherPlugin("/fakelive",authenticator,db))
+	i.Plugin(article.NewArticlesPlugin("/articles",authenticator,db))
+	i.Plugin(securestream.NewSecureStreamPlugin("/tokens","/clients",authenticator,db))
+	i.Plugin(fakelive.NewFakelivePlugin("/fakelive",authenticator,db))
+	i.Post("/auth/login",publisher.AngularSignIn(db, (&publisher.Publisher{}).FindUser, publisher.NewSha512Password, time.Hour*48))
 	opts:=iriscontrol.IrisControlOptions{}
 	opts.Port=5555
 	opts.Users=map[string]string{}
 	opts.Users["thesyncim"]="Kirk1zodiak"
-	iris.Plugin(iriscontrol.New(opts))
+	i.Plugin(iriscontrol.New(opts))
 
 	j := fakelive.RunBackgroundScheduler()
 	a.Quit = j.Quit
 
-	return manners.ListenAndServe(":9999", iris.Serve())
+	return manners.ListenAndServe(":9999", i.Serve())
 }
 
 func (a *app) Start(s service.Service) error {
