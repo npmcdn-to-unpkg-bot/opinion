@@ -64,7 +64,7 @@ func (i *SecureStreamPlugin) PostHandle(route iris.IRoute) {
 // PostListen called after the server is started, here you can do a lot of staff
 // you have the right to access the whole iris' Station also, here you can add more routes and do anything you want, for example start a second server too, an admin web interface!
 // for example let's print to the server's stdout the routes we collected...
-func (i *SecureStreamPlugin) PostListen(s *iris.Station) {
+func (i *SecureStreamPlugin) PreListen(s *iris.Station) {
 
 	tokens := s.Party(i.TokenBaseUrl)
 	tokens.Post("/create", i.TokenController.Create)

@@ -56,7 +56,7 @@ func (i *FakelivePlugin) PostHandle(route iris.IRoute) {
 // PostListen called after the server is started, here you can do a lot of staff
 // you have the right to access the whole iris' Station also, here you can add more routes and do anything you want, for example start a second server too, an admin web interface!
 // for example let's print to the server's stdout the routes we collected...
-func (i *FakelivePlugin) PostListen(s *iris.Station) {
+func (i *FakelivePlugin) PreListen(s *iris.Station) {
 	fake := s.Party(i.BaseUrl)
 	fake.Get("getplaylist", i.FakeliveController.CurrentPlaylist)
 	fake.Get("getsmilplaylist", i.FakeliveController.CurrentSmilPlaylist)
