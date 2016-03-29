@@ -1,19 +1,15 @@
-package main
+package publisher
 
 import (
 	"encoding/json"
-	"net/http"
-
-	"github.com/boltdb/bolt"
-	"github.com/gin-gonic/gin"
-
 	"log"
 	"time"
 
+	"github.com/boltdb/bolt"
+	"github.com/kataras/iris"
 	"github.com/syndtr/goleveldb/leveldb/errors"
 	"gopkg.in/mgo.v2/bson"
 )
-
 
 type Publisher struct {
 	Id       string
@@ -27,6 +23,12 @@ type Publisher struct {
 	Date  time.Time
 }
 
+type Base64Img struct {
+	Filesize int
+	Filetype string
+	Filename string
+	Base64   string
+}
 
 func (pub *Publisher) Delete(id string) error {
 
@@ -152,11 +154,11 @@ func (pub *Publisher) FindUser(email string) (User, error) {
 type PublisherController struct {
 }
 
-func (PublisherController) Create(c *gin.Context) {
+func (PublisherController) Create(c *iris.Context) {
 	var p = &Publisher{}
-	err := c.BindJSON(p)
+	err := c.ReadJSON(p)
 	if err != nil {
-		c.Error(err)
+		c.Write(err.Error())
 		return
 	}
 
@@ -179,17 +181,17 @@ func (PublisherController) Create(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.Error(err)
+		c.Write(err.Error())
 	}
 }
 
-func (PublisherController) Edit(c *gin.Context) {
+func (PublisherController) Edit(c *iris.Context) {
 
 	id := c.Param("id")
 	var p = &Publisher{}
-	err := c.BindJSON(p)
+	err := c.ReadJSON(p)
 	if err != nil {
-		c.Error(err)
+		c.Write(err.Error())
 		return
 	}
 
@@ -212,34 +214,34 @@ func (PublisherController) Edit(c *gin.Context) {
 	err = old.Update(p)
 	if err != nil {
 		log.Println("---------->", err)
-		c.Error(err)
+		c.Write(err.Error())
 	}
 
 }
 
-func (PublisherController) GetId(c *gin.Context) {
+func (PublisherController) GetId(c *iris.Context) {
 
 	id := c.Param("id")
 	var p = &Publisher{}
 
 	p.Get(id)
 
-	c.JSON(http.StatusOK, p)
+	c.JSON(p)
 
 }
 
-func (PublisherController) GetImage(c *gin.Context) {
+func (PublisherController) GetImage(c *iris.Context) {
 
 	id := c.Param("id")
 	var p = &Publisher{}
 
 	p.Get(id)
 
-	c.JSON(http.StatusOK, p.Image.Base64)
+	c.JSON(p.Image.Base64)
 
 }
 
-func (PublisherController) Delete(c *gin.Context) {
+func (PublisherController) Delete(c *iris.Context) {
 
 	id := c.Param("id")
 
@@ -249,11 +251,11 @@ func (PublisherController) Delete(c *gin.Context) {
 		return err
 	})
 	if err != nil {
-		c.Error(err)
+		c.Write(err.Error())
 	}
 }
 
-func (PublisherController) ListAll(c *gin.Context) {
+func (PublisherController) ListAll(c *iris.Context) {
 
 	var publishers []Publisher
 	err := db.View(func(tx *bolt.Tx) error {
@@ -276,11 +278,11 @@ func (PublisherController) ListAll(c *gin.Context) {
 		return nil
 	})
 	if err != nil {
-		c.Error(err)
+		c.Write(err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, publishers)
+	c.JSON(publishers)
 }
 
 func AddDefaultPub() error {

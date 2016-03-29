@@ -197,7 +197,7 @@ angular.module('myApp.Clients', ['ngRoute'])
         $scope.submit = function () {
             $http({
                 method: 'POST',
-                url: window.hostname + 'clients/edit/' + id,
+                url: window.hostname + 'clients/update/' + id,
                 data: $scope.client
             }).then(function successCallback(response) {
                 console.log(response)
@@ -254,7 +254,7 @@ angular.module('myApp.Clients', ['ngRoute'])
     $scope.submit = function () {
         $http({
             method: 'POST',
-            url: window.hostname + 'tokens/edit/' + id,
+            url: window.hostname + 'tokens/update/' + id,
             data: $scope.token
         }).then(function successCallback(response) {
             console.log(response);
