@@ -37,7 +37,7 @@ func (a *app) run() error {
 	}
 	i := iris.Custom(options)
 
-	err = i.Plugin(publisher.NewPublisherPlugin("/fakelive", authenticator, db))
+	err = i.Plugin(publisher.NewPublisherPlugin("/publisher", authenticator, db))
 	if err != nil {
 		log.Fatalln(err)
 	}
