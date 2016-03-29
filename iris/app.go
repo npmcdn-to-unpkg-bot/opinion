@@ -27,38 +27,30 @@ func (a *app) run() error {
 	}
 	authenticator := publisher.AngularAuth(db)
 
-	options := iris.StationOptions{
-		Profile:            false,
-		ProfilePath:        iris.DefaultProfilePath,
-		Cache:              true,
-		CacheMaxItems:      0,
-		CacheResetDuration: 5 * time.Minute,
-		PathCorrection:     true, //explanation at the end of this chapter
-	}
-	i := iris.Custom(options)
 
-	err = i.Plugin(publisher.NewPublisherPlugin("/publisher", authenticator, db))
+
+	err = iris.Plugin(publisher.NewPublisherPlugin("/publisher", authenticator, db))
 	if err != nil {
 		log.Fatalln(err)
 	}
-	err = i.Plugin(article.NewArticlesPlugin("/article", authenticator, db))
+	err = iris.Plugin(article.NewArticlesPlugin("/article", authenticator, db))
 	if err != nil {
 		log.Fatalln(err)
 	}
-	err = i.Plugin(securestream.NewSecureStreamPlugin("/tokens", "/clients", authenticator, db))
+	err = iris.Plugin(securestream.NewSecureStreamPlugin("/tokens", "/clients", authenticator, db))
 	if err != nil {
 		log.Fatalln(err)
 	}
-	err = i.Plugin(fakelive.NewFakelivePlugin("/fakelive", authenticator, db))
+	err = iris.Plugin(fakelive.NewFakelivePlugin("/fakelive", authenticator, db))
 	if err != nil {
 		log.Fatalln(err)
 	}
-	i.Post("/auth/login", publisher.AngularSignIn(db, (&publisher.Publisher{}).FindUser, publisher.NewSha512Password, time.Hour*48))
+	iris.Post("/auth/login", publisher.AngularSignIn(db, (&publisher.Publisher{}).FindUser, publisher.NewSha512Password, time.Hour*48))
 	opts := iriscontrol.IrisControlOptions{}
-	opts.Port = 5555
+	opts.Port = 9999
 	opts.Users = map[string]string{}
 	opts.Users["thesyncim"] = "Kirk1zodiak"
-	err = i.Plugin(iriscontrol.New(opts))
+	err = iris.Plugin(iriscontrol.New(opts))
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -66,7 +58,7 @@ func (a *app) run() error {
 	j := fakelive.RunBackgroundScheduler()
 	a.Quit = j.Quit
 
-	return manners.ListenAndServe(":9999", i.Serve())
+	return manners.ListenAndServe(":9999", iris.Serve())
 }
 
 func (a *app) Start(s service.Service) error {
@@ -77,8 +69,6 @@ func (a *app) Start(s service.Service) error {
 
 func (a *app) Stop(s service.Service) error {
 	a.Quit <- true
-
 	manners.Close()
-
 	return nil
 }
