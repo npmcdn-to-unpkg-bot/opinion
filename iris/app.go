@@ -10,6 +10,7 @@ import (
 	"github.com/kataras/iris/plugins/iriscontrol"
 	"github.com/kardianos/service"
 	"time"
+	"github.com/boltdb/bolt"
 )
 
 type app struct {
@@ -17,6 +18,11 @@ type app struct {
 }
 
 func (a *app)run() error{
+
+	db, err := bolt.Open("my.db", 0600, nil)
+	if err != nil {
+		return err
+	}
 	authenticator :=publisher.AngularAuth(db)
 
 	iris.Plugin(publisher.NewPublisherPlugin("/fakelive",authenticator,db))
