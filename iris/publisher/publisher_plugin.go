@@ -13,7 +13,7 @@ type PublisherPlugin struct {
 	PublisherController *PublisherController
 }
 
-func NewPublisherPlugin(baseURL string, authenticator iris.HandlerFunc,dbb *bolt.Bucket) *PublisherPlugin {
+func NewPublisherPlugin(baseURL string, authenticator iris.HandlerFunc,dbb *bolt.DB) *PublisherPlugin {
 	db=dbb
 	return &PublisherPlugin{
 		BaseUrl:             baseURL,

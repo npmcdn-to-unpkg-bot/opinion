@@ -84,8 +84,8 @@ func getYoutubeVideoIds() (list []string, err error) {
 
 	var clip_files []Clip_files
 
-	db.DB()
-	err = db.Table("clip_files").Where("embed_flash <> ? and Id_quality = 1", "").Find(&clip_files).Error
+	sqldb.DB()
+	err = sqldb.Table("clip_files").Where("embed_flash <> ? and Id_quality = 1", "").Find(&clip_files).Error
 	if err != nil {
 		return
 	}
@@ -97,6 +97,7 @@ func getYoutubeVideoIds() (list []string, err error) {
 			log.Println(stacktrace.Propagate(errr, "error getting video id for: %s id %d", clip_files[i].Embed_flash, clip_files[i].Id_clip))
 			continue
 		}
+
 
 		list = append(list, ytId)
 

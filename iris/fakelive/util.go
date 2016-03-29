@@ -204,12 +204,12 @@ func GetVideoLocation(id int) (string, error) {
 	var vid_clip Clip_files
 	var vid Clips
 
-	err := db.Table("clip_files").Where("id_clip = ? and id_quality = 1", id).First(&vid_clip).Error
+	err := sqldb.Table("clip_files").Where("id_clip = ? and id_quality = 1", id).First(&vid_clip).Error
 	if err != nil {
 		return "", err
 	}
 
-	err = db.Where("id = ? ", id).First(&vid).Error
+	err = sqldb.Where("id = ? ", id).First(&vid).Error
 	if err != nil {
 		return "", err
 	}

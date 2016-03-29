@@ -13,7 +13,7 @@ type ArticlesPlugin struct {
 	ArticlesController *ArticlesController
 }
 
-func NewArticlesPlugin(baseURL string, authenticator iris.HandlerFunc,dbb *bolt.Bucket) *ArticlesPlugin {
+func NewArticlesPlugin(baseURL string, authenticator iris.HandlerFunc,dbb *bolt.DB) *ArticlesPlugin {
 	db=dbb
 	return &ArticlesPlugin{
 		BaseUrl:            baseURL,

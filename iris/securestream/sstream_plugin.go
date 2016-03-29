@@ -4,7 +4,7 @@ package securestream
 import (
 	"github.com/kataras/iris"
 	"github.com/boltdb/bolt"
-	"fmt"
+
 )
 
 type SecureStreamPlugin struct {

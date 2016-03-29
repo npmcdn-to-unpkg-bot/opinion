@@ -7,6 +7,7 @@ import (
 	"github.com/thesyncim/opinion/iris/fakelive"
 	"github.com/thesyncim/opinion/iris/article"
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/plugins/iriscontrol"
 	"github.com/kardianos/service"
 	"time"
 )
@@ -23,6 +24,10 @@ func (a *app)run() error{
 	iris.Plugin(securestream.NewSecureStreamPlugin("/tokens","/clients",authenticator,db))
 	iris.Plugin(fakelive.NewFakelivePlugin("/fakelive",authenticator,db))
 	iris.Post("/auth/login",publisher.AngularSignIn(db, (&publisher.Publisher{}).FindUser, publisher.NewSha512Password, time.Hour*48))
+	opts:=iriscontrol.IrisControlOptions{}
+	opts.Port=5555
+	opts.Users["thesyncim"]="Kirk1zodiak"
+	iris.Plugin(iriscontrol.New(opts))
 
 	j := fakelive.RunBackgroundScheduler()
 	a.Quit = j.Quit

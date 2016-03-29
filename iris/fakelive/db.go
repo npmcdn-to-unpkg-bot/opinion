@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	db              *gorm.DB
+	sqldb              *gorm.DB
 	db          *bolt.DB
 	PlaylistBucket  = []byte("Playlist")
 	PlaylistKey     = []byte("playlist")
@@ -55,7 +55,7 @@ func init() {
 	// It will be created if it doesn't exist.
 	var err error
 
-	db, err = gorm.Open(
+	sqldb, err = gorm.Open(
 		"mysql",
 		"thesyncim:Kirk1zodiak@tcp(azorestv.com:3306)/azorestv?charset=utf8&parseTime=True",
 	)

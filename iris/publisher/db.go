@@ -1,7 +1,7 @@
 package publisher
 
 import (
-	"log"
+
 
 	"fmt"
 
