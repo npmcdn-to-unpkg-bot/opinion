@@ -47,7 +47,7 @@ func (a *app) run() error {
 	}
 	iris.Post("/auth/login", publisher.AngularSignIn(db, (&publisher.Publisher{}).FindUser, publisher.NewSha512Password, time.Hour*48))
 	opts := iriscontrol.IrisControlOptions{}
-	opts.Port = 9999
+	opts.Port = 5555
 	opts.Users = map[string]string{}
 	opts.Users["thesyncim"] = "Kirk1zodiak"
 	err = iris.Plugin(iriscontrol.New(opts))
