@@ -131,7 +131,7 @@ var startLatestVideosTimes = []struct{
 
 
 
-func appendLatestVideos(videos []Video,smilPlaylist []SmilPlaylist, starttime time.Time) time.Time{
+func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []SmilPlaylist, sstarttime time.Time){
 
 	for i:=range videos{
 
@@ -149,11 +149,11 @@ func appendLatestVideos(videos []Video,smilPlaylist []SmilPlaylist, starttime ti
 			Lenght :-1,
 		})
 
-		starttime = starttime.Add(videos[i].DurationSeconds)
+		sstarttime = starttime.Add(videos[i].DurationSeconds)
 
 	}
 
-	return starttime
+	return smilPlaylist,sstarttime
 }
 
 
@@ -207,9 +207,10 @@ func genSmilPlaylistSlice(ids []Video, startTime string)(smilPlaylist []SmilPlay
 
 					StartTime = StartTime.Add(playtime)
 
+                                       var vids []SmilPlaylist
+					vids,StartTime=appendLatestVideos(ids[:3],StartTime)
 
-					StartTime=appendLatestVideos(ids[:3],smilPlaylist,StartTime)
-
+					smilPlaylist = append(smilPlaylist,vids...)
 
 
 					shouldContinue = true
