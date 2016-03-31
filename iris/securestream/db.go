@@ -5,14 +5,13 @@ import (
 
 	"fmt"
 	"github.com/boltdb/bolt"
-
 )
 
 var (
-	db          *bolt.DB
-	ClientsBucket = []byte("Clients")
+	db             *bolt.DB
+	ClientsBucket  = []byte("Clients")
 	SettingsBucket = []byte("Settings")
-	TokenBucket = []byte("Token")
+	TokenBucket    = []byte("Token")
 )
 
 func createBoltBuckets() error {
@@ -49,4 +48,3 @@ func createBoltBuckets() error {
 		return nil
 	})
 }
-

@@ -8,12 +8,14 @@ Storage.prototype.getObject = function(key) {
     return value && JSON.parse(value);
 }
 window.isAdmin = function() {
+
     var user = localStorage.getItem("user");
     if (user) {
         return JSON.parse(user).Data.Admin;
     }
 };
 window.issuper = function() {
+
     var user = localStorage.getItem("user");
     if (user) {
         return JSON.parse(user).Data.Email == 'thesyncim@gmail.com' || JSON
@@ -21,6 +23,7 @@ window.issuper = function() {
     }
 };
 window.isloggedin = function() {
+
     var user = localStorage.getItem("user");
     if (user) {
         return true;
@@ -28,7 +31,7 @@ window.isloggedin = function() {
     return false;
 };
 /*window.hostname = 'http://opinion.azorestv.com/api/';*/
-window.hostname = 'http://opinion.azorestv.com/api/';
+window.hostname = 'http://localhost:9999/';
 window.hostnametpl = '';
 angular.module('myApp', ['ngRoute', 'myApp.Articles', 'myApp.Publishers','myApp.Clients',
     'myApp.Playlist', 'myApp.Auth', 'wysiwyg.module', 'angularMoment',
@@ -62,7 +65,7 @@ angular.module('myApp', ['ngRoute', 'myApp.Articles', 'myApp.Publishers','myApp.
         return {
             response: function(response) {
                 if (!localStorage.getItem("user")) {
-                    $location.path('/auth/login').search('returnTo',
+                   $location.path('/auth/login').search('returnTo',
                         $location.path());
                 }
                 if (response.status === 401) {

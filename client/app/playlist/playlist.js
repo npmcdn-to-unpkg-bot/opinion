@@ -187,6 +187,14 @@ angular.module('myApp.Playlist', ['ngRoute'])
     $scope.StartTime = '';
     $scope.LiveSettings = {StartLiveTime: new Date(), EndLiveTime: new Date()};
 
+    $scope.RepeatTimes = [];
+
+    $scope.addRepeatTimes=function(){
+
+        $scope.RepeatTimes.push({});
+
+    };
+
     var update = function () {
         $http({
             method: 'GET',

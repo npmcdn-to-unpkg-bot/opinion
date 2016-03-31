@@ -11,12 +11,12 @@ import (
 	"bytes"
 	"github.com/boltdb/bolt"
 
+	"github.com/kataras/iris"
+	"github.com/thesyncim/opinion/iris/publisher"
 	"image"
 	"image/jpeg"
 	"labix.org/v2/mgo/bson"
 	"strings"
-	"github.com/thesyncim/opinion/iris/publisher"
-	"github.com/kataras/iris"
 )
 
 type Article struct {
@@ -38,7 +38,6 @@ type Base64Img struct {
 	Base64   string
 }
 
-
 func (art *Article) Delete(id string) error {
 
 	return db.Update(func(tx *bolt.Tx) error {
@@ -48,7 +47,7 @@ func (art *Article) Delete(id string) error {
 }
 
 func (art *Article) Publisher(id string) *publisher.Publisher {
-	 p := &publisher.Publisher{}
+	p := &publisher.Publisher{}
 	return p.Get(id)
 }
 
@@ -123,7 +122,8 @@ func (ArticlesController) Create(c *iris.Context) {
 		return
 	}
 
-	val := c.Get(publisher.IrisContextField);if val!=nil {
+	val := c.Get(publisher.IrisContextField)
+	if val != nil {
 		a.Publisherid = val.(publisher.Session).UserID
 	}
 
@@ -228,7 +228,7 @@ func (ArticlesController) GetId(c *iris.Context) {
 	if err != nil {
 		c.Write(err.Error())
 	}
-	c.JSON( a)
+	c.JSON(a)
 
 }
 
@@ -279,7 +279,7 @@ func prepareArticlesforUser(userID string, articles []Article) []Article {
 func (ArticlesController) ListAll(c *iris.Context) {
 	var articles []Article
 	var userid string
-	if val := c.Get(publisher.IrisContextField); val!=nil {
+	if val := c.Get(publisher.IrisContextField); val != nil {
 		userid = val.(publisher.Session).UserID
 
 	}
@@ -308,6 +308,11 @@ func (ArticlesController) ListAll(c *iris.Context) {
 
 	if err != nil {
 		c.Write(err.Error())
+		return
+	}
+
+	if articles == nil || userid == "" {
+		c.JSON(nil)
 		return
 	}
 

@@ -1,18 +1,18 @@
 package securestream
 
 import (
-	"github.com/kataras/iris"
-	"github.com/boltdb/bolt"
-	"time"
 	"encoding/json"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/boltdb/bolt"
+	"github.com/kataras/iris"
 	"github.com/palantir/stacktrace"
+	"gopkg.in/mgo.v2/bson"
 	"log"
+	"time"
 )
 
 type TokenController struct{}
 
-func (tc *TokenController)Create(c *iris.Context) {
+func (tc *TokenController) Create(c *iris.Context) {
 	var Token = &Token{}
 	err := c.ReadJSON(Token)
 	if err != nil {
@@ -27,26 +27,25 @@ func (tc *TokenController)Create(c *iris.Context) {
 	}
 }
 
-func (tc *TokenController)Read(c *iris.Context) {
+func (tc *TokenController) Read(c *iris.Context) {
 	id := c.Param("id")
 	var Token = &Token{}
 
 	c.JSON(Token.Get(id))
 }
 
-func (tc *TokenController)ReadAll(c *iris.Context) {
+func (tc *TokenController) ReadAll(c *iris.Context) {
 	var Token = &Token{}
 
 	Tokens, err := Token.GetAll()
 	if err != nil {
-
 		c.Write(err.Error())
 		return
 	}
 	c.JSON(Tokens)
 }
 
-func (tc *TokenController)Update(c *iris.Context) {
+func (tc *TokenController) Update(c *iris.Context) {
 	var Token = &Token{}
 
 	err := c.ReadJSON(Token)
@@ -62,7 +61,7 @@ func (tc *TokenController)Update(c *iris.Context) {
 	}
 }
 
-func (tc *TokenController)Delete(c *iris.Context) {
+func (tc *TokenController) Delete(c *iris.Context) {
 	id := c.Param("id")
 	var Token = &Token{}
 
@@ -81,7 +80,7 @@ type Token struct {
 	Expire     time.Time
 }
 
-func (t *Token)Save() error {
+func (t *Token) Save() error {
 	t.Id = bson.NewObjectId().Hex()
 	t.ClientName = new(Client).Get(t.ClientId).Name
 	return db.Update(func(tx *bolt.Tx) error {
@@ -95,11 +94,9 @@ func (t *Token)Save() error {
 		}
 		return b.Put([]byte(t.Id), out)
 	})
-
-	return nil
 }
 
-func (c *Token)GetAll() ([]Token, error) {
+func (c *Token) GetAll() ([]Token, error) {
 	var tokens []Token
 	err := db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
@@ -124,7 +121,7 @@ func (c *Token)GetAll() ([]Token, error) {
 	return tokens, nil
 }
 
-func (t *Token)Update() error {
+func (t *Token) Update() error {
 	t.ClientName = new(Client).Get(t.ClientId).Name
 	return db.Update(func(tx *bolt.Tx) error {
 		// Retrieve the users bucket.
@@ -139,7 +136,7 @@ func (t *Token)Update() error {
 	})
 }
 
-func (t *Token)Delete(id string) error {
+func (t *Token) Delete(id string) error {
 	return db.Update(func(tx *bolt.Tx) error {
 		// Retrieve the users bucket.
 		// This should be created when the DB is first opened.
@@ -149,7 +146,7 @@ func (t *Token)Delete(id string) error {
 	})
 }
 
-func (t *Token)Get(id string) *Token {
+func (t *Token) Get(id string) *Token {
 	err := db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket(TokenBucket)
@@ -176,7 +173,7 @@ func (t *Token)Get(id string) *Token {
 	return t
 }
 
-func (t *Token)GetClient() *Client {
+func (t *Token) GetClient() *Client {
 	if t == nil {
 		return nil
 	}

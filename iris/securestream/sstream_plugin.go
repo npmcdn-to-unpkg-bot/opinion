@@ -2,8 +2,8 @@
 package securestream
 
 import (
-	"github.com/kataras/iris"
 	"github.com/boltdb/bolt"
+	"github.com/kataras/iris"
 
 	"log"
 )
@@ -12,13 +12,13 @@ type SecureStreamPlugin struct {
 	container        iris.IPluginContainer
 	TokenBaseUrl     string
 	ClientBaseUrl    string
-	Authenticator iris.HandlerFunc
+	Authenticator    iris.HandlerFunc
 	TokenController  *TokenController
 	ClientController *ClientController
 }
 
-func NewSecureStreamPlugin(tokenURL, clientURL string, authenticator iris.HandlerFunc,dbb *bolt.DB) *SecureStreamPlugin {
-	db=dbb
+func NewSecureStreamPlugin(tokenURL, clientURL string, authenticator iris.HandlerFunc, dbb *bolt.DB) *SecureStreamPlugin {
+	db = dbb
 
 	err := createBoltBuckets()
 	if err != nil {
@@ -26,12 +26,11 @@ func NewSecureStreamPlugin(tokenURL, clientURL string, authenticator iris.Handle
 
 	}
 	return &SecureStreamPlugin{
-		TokenBaseUrl:tokenURL,
-		ClientBaseUrl:clientURL,
-		Authenticator:authenticator,
-		TokenController:&TokenController{},
-		ClientController:&ClientController{},
-
+		TokenBaseUrl:     tokenURL,
+		ClientBaseUrl:    clientURL,
+		Authenticator:    authenticator,
+		TokenController:  &TokenController{},
+		ClientController: &ClientController{},
 	}
 }
 
@@ -80,7 +79,7 @@ func (i *SecureStreamPlugin) PreListen(s *iris.Station) {
 	clients.Get("/get/:id", i.ClientController.Read)
 	clients.Get("/getall", i.ClientController.ReadAll)
 
-	//do what ever you want, if you have imagination you can do a lot
+	i.container.Printf("Plugin secuestream registered \n")
 }
 
 //

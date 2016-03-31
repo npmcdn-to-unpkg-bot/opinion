@@ -1,4 +1,4 @@
-package fakelive
+package fakelive2
 
 import (
 	"log"
@@ -34,8 +34,6 @@ func RunBackgroundScheduler() *scheduler.Job {
 }
 
 func work() {
-	//TODO remove before push
-	return
 	err := downloadMissingYoutubeVideos()
 	if err != nil {
 		log.Println(err)
@@ -52,8 +50,8 @@ func work() {
 
 	videos = firstNAndShuffle(3, videos)
 
-	smil := genSmilWithLive(videos, calcScheduleDate())
-
+	smil := genSmil(genSmilPlaylistSlice(videos, calcScheduleDate()))
+ 
 	SaveCurrentSmilPlaylist(smil)
 
 	s, err := os.Create("/var/www/vhosts/azorestv.com/httpdocs/uploads/movies/streamschedule.smil")

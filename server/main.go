@@ -6,7 +6,7 @@ import (
 	"github.com/braintree/manners"
 	"github.com/gin-gonic/gin"
 	"github.com/itsjamie/gin-cors"
-	"github.com/thesyncim/opinion/server/fakelive"
+	fakelive "github.com/thesyncim/opinion/server/fakelivev2"
 	"github.com/kardianos/service"
 	"log"
 	"os"

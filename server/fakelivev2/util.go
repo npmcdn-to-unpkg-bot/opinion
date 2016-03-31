@@ -1,4 +1,4 @@
-package fakelive
+package fakelive2
 
 import (
 	"bytes"
@@ -12,6 +12,9 @@ import (
 	"github.com/Netherdrake/youtubeId"
 	"github.com/jinzhu/now"
 	"github.com/palantir/stacktrace"
+	"os/exec"
+	"github.com/gin-gonic/gin"
+	"github.com/carlescere/scheduler"
 )
 
 func calcScheduleDate() string {
@@ -88,6 +91,178 @@ func getIntDuration(dur string) int {
 	return duration
 }
 
+
+
+type SmilPlaylist struct{
+	Type  videoType
+	Scheduled time.Time
+	Src string
+	Start int
+	Lenght int
+}
+
+
+var startLatestVideosTimes = []struct{
+	Start time.Time
+	Once sync.Once
+	}{
+	{
+		now.MustParse("08:00"),
+		sync.Once{},
+
+
+	},
+	{
+		now.MustParse("12:00"),
+		sync.Once{},
+
+
+	},
+	{
+		now.MustParse("15:00"),
+		sync.Once{},
+
+
+	},
+
+
+}
+
+
+
+func appendLatestVideos(videos []Video,smilPlaylist []SmilPlaylist, starttime time.Time) time.Time{
+
+	for i:=range videos{
+
+		location, err := GetVideoLocation(videos[i].Id)
+		if err != nil {
+			log.Println(stacktrace.Propagate(err, "video id : %d", videos[i].Id))
+			continue
+		}
+
+		smilPlaylist=append(smilPlaylist,SmilPlaylist{
+			Type:vod,
+			Scheduled:starttime,
+			Src:location,
+			Start :0,
+			Lenght :-1,
+		})
+
+		starttime = starttime.Add(videos[i].DurationSeconds)
+
+	}
+
+	return starttime
+}
+
+
+func genSmilPlaylistSlice(ids []Video, startTime string)(smilPlaylist []SmilPlaylist ){
+
+
+	var StartTime time.Time
+
+	StartTime = now.MustParse(startTime)
+
+
+	var shouldContinue = true
+
+	var startLatestIndex int
+
+
+	for i := range ids {
+		location, err := GetVideoLocation(ids[i].Id)
+		if err != nil {
+			log.Println(stacktrace.Propagate(err, "video id : %d", ids[i].Id))
+			continue
+		}
+
+
+		//
+		if startLatestIndex < len(startLatestVideosTimes) {
+
+			//check if at the end of the video we pass the startstream time
+
+			endVideoTime := StartTime.Add(ids[i].DurationSeconds)
+
+			//the livestream starts before the end of the vod
+			if endVideoTime.After(startLatestVideosTimes[startLatestIndex].Start) {
+				startLatestVideosTimes[startLatestIndex].Once.Do(func() {
+					//TODO resolv this mess <
+					cuttime := endVideoTime.Sub(startLatestVideosTimes[startLatestIndex].Start)
+
+					playtime := ids[i].DurationSeconds - cuttime
+
+					smilPlaylist = append(smilPlaylist, SmilPlaylist{
+						Type:vod,
+						Scheduled:StartTime,
+						Src:location,
+						Start :0,
+						Lenght :int(playtime / time.Second),
+					})
+
+					StartTime = StartTime.Add(playtime)
+
+
+					StartTime=appendLatestVideos(ids[:3],smilPlaylist,StartTime)
+
+
+
+					shouldContinue = true
+					startLatestIndex++
+
+				})
+
+				if shouldContinue {
+					shouldContinue = false
+					continue
+				}
+				//calculate when we need to stop the vod
+
+			}
+		}
+
+
+		smilPlaylist=append(smilPlaylist,SmilPlaylist{
+			Type:vod,
+			Scheduled:StartTime,
+			Src:location,
+			Start :0,
+			Lenght :-1,
+		})
+
+		StartTime = StartTime.Add(ids[i].DurationSeconds)
+	}
+
+	return
+}
+
+func genSmil(smilp []SmilPlaylist)string{
+	const tpllive = `<playlist name="pl%d" playOnStream="fakelive" repeat="true" scheduled="%s">
+			<video src="%s" start="%d" length="%d"/>
+		</playlist>`
+	smil := bytes.NewBuffer([]byte(""))
+	smil.WriteString(
+		`<smil>
+		    <head>
+            </head>
+            <body>
+                <stream name="fakelive"></stream>
+
+`)
+
+	for i:= range smilp{
+
+		smil.WriteString(fmt.Sprintf(tpllive, i, timeFormated(smilp[i].Scheduled), smilp[i].Src,smilp[i].Start, smilp[i].Lenght) + "\n")
+
+	}
+
+	smil.WriteString(`</body></smil>`)
+
+	return smil.String()
+
+}
+
+
 func genSmilWithLive(ids []Video, startTime string) string {
 	smil := bytes.NewBuffer([]byte(""))
 	_, err := smil.WriteString(
@@ -140,7 +315,7 @@ func genSmilWithLive(ids []Video, startTime string) string {
 	}
 	var once sync.Once
 
-	var onceagain = 0
+	var shouldcontinue = true
 
 	for i := range ids {
 		location, err := GetVideoLocation(ids[i].Id)
@@ -175,8 +350,8 @@ func genSmilWithLive(ids []Video, startTime string) string {
 					ctr++
 
 				})
-				if onceagain == 0 {
-					onceagain++
+				if shouldcontinue {
+					shouldcontinue= false
 					continue
 				}
 				//calculate when we need to stop the vod
@@ -211,7 +386,7 @@ func GetVideoLocation(id int) (string, error) {
 
 	var location string
 
-	switch vid.Type {
+	switch videoType(vid.Type) {
 	case local:
 		location = vid_clip.Vod_flash
 
@@ -238,3 +413,105 @@ func GetVideoLocation(id int) (string, error) {
 	}
 	return location, nil
 }
+
+
+func HandlerCurrentPlaylist(c *gin.Context) {
+
+	c.JSON(200, GetCurrentPlaylist())
+
+}
+
+func HandlerCurrentSmilPlaylist(c *gin.Context) {
+
+
+	c.Writer.WriteString(GetCurrentSmilPlaylist())
+
+
+}
+
+
+func HandlerGetStartTime(c *gin.Context) {
+
+	start, err := getStartTime()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(200, start)
+
+}
+
+func HandlerSetStartTime(c *gin.Context) {
+	type startTime struct {
+		StartTime string
+	}
+	var Ss startTime
+	err := c.BindJSON(&Ss)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	log.Println(Ss)
+	err = SetStartTime(Ss.StartTime)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	j.Quit <- true
+
+	j, err = scheduler.Every().Day().At(Ss.StartTime).Run(func() {
+		work()
+	})
+
+	if err != nil {
+		log.Fatalln(stacktrace.Propagate(err, ""))
+
+	}
+
+}
+
+func HandlerGetLiveStreamSettings(c *gin.Context) {
+
+	settings, err := GetLiveStreamSettings()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(200, settings)
+
+}
+
+func HandlerSetLiveStreamSettings(c *gin.Context) {
+	var lss LiveStreamSettings
+
+	err := c.BindJSON(&lss)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	err = SetLiveStreamSettings(lss)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+}
+
+func HandlerReloadNow(c *gin.Context) {
+	work()
+	cmd := exec.Command("service", "WowzaStreamingEngine", "restart")
+	err := cmd.Start()
+	if err != nil {
+		c.Error(err)
+		log.Fatalln(stacktrace.Propagate(err, ""))
+		return
+	}
+	cmd.Wait()
+
+}
+

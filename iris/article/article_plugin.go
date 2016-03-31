@@ -2,8 +2,8 @@
 package article
 
 import (
-	"github.com/kataras/iris"
 	"github.com/boltdb/bolt"
+	"github.com/kataras/iris"
 	"log"
 )
 
@@ -14,10 +14,10 @@ type ArticlesPlugin struct {
 	ArticlesController *ArticlesController
 }
 
-func NewArticlesPlugin(baseURL string, authenticator iris.HandlerFunc,dbb *bolt.DB) *ArticlesPlugin {
-	db=dbb
-	err:=createBoltBuckets()
-	if err!=nil{
+func NewArticlesPlugin(baseURL string, authenticator iris.HandlerFunc, dbb *bolt.DB) *ArticlesPlugin {
+	db = dbb
+	err := createBoltBuckets()
+	if err != nil {
 		log.Fatalln(err)
 	}
 	return &ArticlesPlugin{
@@ -58,7 +58,7 @@ func (i *ArticlesPlugin) PostHandle(route iris.IRoute) {
 // for example let's print to the server's stdout the routes we collected...
 func (i *ArticlesPlugin) PreListen(s *iris.Station) {
 	article := s.Party(i.BaseUrl)
-	article.Use(i.Authenticator)
+	//article.Use(i.Authenticator)
 	article.Post("/create", i.ArticlesController.Create)
 	article.Post("/edit/:id", i.ArticlesController.Edit)
 	article.Get("/getid/:id", i.ArticlesController.GetId)
@@ -67,11 +67,10 @@ func (i *ArticlesPlugin) PreListen(s *iris.Station) {
 	article.Get("/listall", i.ArticlesController.ListAll)
 	article.Get("/listfrontend", i.ArticlesController.ListFrontend)
 
-	articlesFrontend:= s.Party(i.BaseUrl+"f")
+	articlesFrontend := s.Party(i.BaseUrl + "f")
 	articlesFrontend.Get("/getid/:id", i.ArticlesController.GetId)
 	articlesFrontend.Get("/listfrontend", i.ArticlesController.ListFrontend)
 
+	i.container.Printf("Plugin article registered \n")
 
 }
-
-

@@ -1,18 +1,18 @@
 package securestream
 
 import (
+	"encoding/json"
+	"github.com/boltdb/bolt"
 	"github.com/kataras/iris"
 	"github.com/palantir/stacktrace"
-	"github.com/boltdb/bolt"
-	"time"
-	"encoding/json"
-	"log"
 	"gopkg.in/mgo.v2/bson"
+	"log"
+	"time"
 )
 
 type ClientController struct{}
 
-func (cc *ClientController)Create(c *iris.Context) {
+func (cc *ClientController) Create(c *iris.Context) {
 	var client = &Client{}
 	err := c.ReadJSON(client)
 	if err != nil {
@@ -25,17 +25,16 @@ func (cc *ClientController)Create(c *iris.Context) {
 		c.Write(err.Error())
 		return
 	}
-
 }
 
-func (cc *ClientController)Read(c *iris.Context) {
+func (cc *ClientController) Read(c *iris.Context) {
 	id := c.Param("id")
 	var client = &Client{}
 
 	c.JSON(client.Get(id))
 }
 
-func (cc *ClientController)ReadAll(c *iris.Context) {
+func (cc *ClientController) ReadAll(c *iris.Context) {
 	var client = &Client{}
 
 	clients, err := client.GetAll()
@@ -46,7 +45,7 @@ func (cc *ClientController)ReadAll(c *iris.Context) {
 	c.JSON(clients)
 }
 
-func (cc *ClientController)Update(c *iris.Context) {
+func (cc *ClientController) Update(c *iris.Context) {
 	var client = &Client{}
 	err := c.ReadJSON(client)
 	if err != nil {
@@ -61,7 +60,7 @@ func (cc *ClientController)Update(c *iris.Context) {
 	}
 }
 
-func (cc *ClientController)Delete(c *iris.Context) {
+func (cc *ClientController) Delete(c *iris.Context) {
 	id := c.Param("id")
 	var client = &Client{}
 
@@ -79,7 +78,7 @@ type Client struct {
 	Created time.Time
 }
 
-func (c *Client)Save() error {
+func (c *Client) Save() error {
 	c.Id = bson.NewObjectId().Hex()
 	return db.Update(func(tx *bolt.Tx) error {
 		// Retrieve the users bucket.
@@ -92,11 +91,9 @@ func (c *Client)Save() error {
 		}
 		return b.Put([]byte(c.Id), out)
 	})
-
-	return nil
 }
 
-func (c *Client)Update() error {
+func (c *Client) Update() error {
 	return db.Update(func(tx *bolt.Tx) error {
 		// Retrieve the users bucket.
 		// This should be created when the DB is first opened.
@@ -110,7 +107,7 @@ func (c *Client)Update() error {
 	})
 }
 
-func (c *Client)Delete(id string) error {
+func (c *Client) Delete(id string) error {
 	return db.Update(func(tx *bolt.Tx) error {
 		// Retrieve the users bucket.
 		// This should be created when the DB is first opened.
@@ -120,7 +117,7 @@ func (c *Client)Delete(id string) error {
 	})
 }
 
-func (c *Client)Get(id string) *Client {
+func (c *Client) Get(id string) *Client {
 	err := db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket(ClientsBucket)
@@ -147,7 +144,7 @@ func (c *Client)Get(id string) *Client {
 	return c
 }
 
-func (c *Client)GetAll() ([]Client, error) {
+func (c *Client) GetAll() ([]Client, error) {
 	var clients []Client
 	err := db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
@@ -171,5 +168,3 @@ func (c *Client)GetAll() ([]Client, error) {
 
 	return clients, nil
 }
-
-

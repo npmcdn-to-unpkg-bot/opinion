@@ -2,8 +2,9 @@
 package publisher
 
 import (
-	"github.com/kataras/iris"
 	"github.com/boltdb/bolt"
+	"github.com/kataras/iris"
+
 	"log"
 )
 
@@ -14,10 +15,10 @@ type PublisherPlugin struct {
 	PublisherController *PublisherController
 }
 
-func NewPublisherPlugin(baseURL string, authenticator iris.HandlerFunc,dbb *bolt.DB) *PublisherPlugin {
-	db=dbb
-	err:=createBoltBuckets()
-	if err!=nil{
+func NewPublisherPlugin(baseURL string, authenticator iris.HandlerFunc, dbb *bolt.DB) *PublisherPlugin {
+	db = dbb
+	err := createBoltBuckets()
+	if err != nil {
 		log.Fatalln(err)
 	}
 	return &PublisherPlugin{
@@ -58,13 +59,17 @@ func (i *PublisherPlugin) PostHandle(route iris.IRoute) {
 // for example let's print to the server's stdout the routes we collected...
 func (i *PublisherPlugin) PreListen(s *iris.Station) {
 	pub := s.Party(i.BaseUrl)
-	pub.Post("/create", i.Authenticator, i.PublisherController.Create)
-	pub.Post("/edit/:id", i.Authenticator, i.PublisherController.Edit)
+
+	pub.Post("/create", i.PublisherController.Create)
+	//pub.Post("/create", i.Authenticator, i.PublisherController.Create)
+	//pub.Post("/edit/:id", i.Authenticator, i.PublisherController.Edit)
+	pub.Post("/edit/:id", i.PublisherController.Edit)
 	pub.Get("/getid/:id", i.PublisherController.GetId)
-	pub.Post("/delete/:id", i.Authenticator, i.PublisherController.Delete)
+	pub.Post("/delete/:id", i.PublisherController.Delete)
+	//pub.Post("/delete/:id", i.Authenticator, i.PublisherController.Delete)
 	pub.Get("/listall", i.PublisherController.ListAll)
 	pub.Get("/publisher/image/:id", i.PublisherController.GetImage)
 
-	i.container.Printf("Plugin routes registereds  %+v",pub )
+	i.container.Printf("Plugin publisher registered \n")
 
 }

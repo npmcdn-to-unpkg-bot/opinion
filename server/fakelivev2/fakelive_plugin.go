@@ -1,5 +1,5 @@
 //file sstream_plugin.go
-package fakelive
+package fakelive2
 
 import (
 	"github.com/boltdb/bolt"

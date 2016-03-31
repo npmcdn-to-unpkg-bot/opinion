@@ -1,8 +1,6 @@
 package article
 
 import (
-
-
 	"fmt"
 
 	"github.com/boltdb/bolt"
@@ -11,10 +9,10 @@ import (
 var db *bolt.DB
 
 var (
-	ArticlesBucket   = []byte("Articles")
+	ArticlesBucket = []byte("Articles")
 )
 
-func createBoltBuckets()error {
+func createBoltBuckets() error {
 	// Open the my.db data file in your current directory.
 	// It will be created if it doesn't exist.
 	return db.Update(func(tx *bolt.Tx) error {
@@ -22,7 +20,6 @@ func createBoltBuckets()error {
 		if err != nil {
 			return fmt.Errorf("create bucket: %s", err)
 		}
-
 
 		return nil
 	})

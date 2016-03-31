@@ -1,4 +1,4 @@
-package fakelive
+package fakelive2
 
 import (
 	"fmt"

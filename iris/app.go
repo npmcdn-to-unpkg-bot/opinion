@@ -3,7 +3,8 @@ package main
 import (
 	"github.com/braintree/manners"
 	"github.com/kataras/iris"
-	"github.com/kataras/iris/plugins/iriscontrol"
+
+	//"github.com/kataras/iris/plugins/iriscontrol"
 	"github.com/thesyncim/opinion/iris/article"
 	"github.com/thesyncim/opinion/iris/fakelive"
 	"github.com/thesyncim/opinion/iris/publisher"
@@ -13,6 +14,9 @@ import (
 	"github.com/kardianos/service"
 	"log"
 	"time"
+
+	"github.com/kataras/iris/middleware/cors"
+	"github.com/kataras/iris/plugins/routesinfo"
 )
 
 type app struct {
@@ -27,7 +31,10 @@ func (a *app) run() error {
 	}
 	authenticator := publisher.AngularAuth(db)
 
+	info := routesinfo.RoutesInfo()
+	iris.Plugin(info)
 
+	iris.Use(cors.New(cors.CorsOptions{AllowCredentials: true}))
 
 	err = iris.Plugin(publisher.NewPublisherPlugin("/publisher", authenticator, db))
 	if err != nil {
@@ -46,13 +53,15 @@ func (a *app) run() error {
 		log.Fatalln(err)
 	}
 	iris.Post("/auth/login", publisher.AngularSignIn(db, (&publisher.Publisher{}).FindUser, publisher.NewSha512Password, time.Hour*48))
-	opts := iriscontrol.IrisControlOptions{}
-	opts.Port = 5555
-	opts.Users = map[string]string{}
-	opts.Users["thesyncim"] = "Kirk1zodiak"
-	err = iris.Plugin(iriscontrol.New(opts))
-	if err != nil {
-		log.Fatalln(err)
+	all := info.All()
+
+	println("The first registed route was: ", all[0].Path, "registed at: ", all[0].RegistedAt.String())
+	println("All routes info:")
+	for i := 0; i < len(all); i++ {
+		println(all[i].String())
+		//outputs->
+		// Domain: localhost Method: GET Path: /yourpath RegistedAt: 2016/03/27 15:27:05:029 ...
+		// Domain: localhost Method: POST Path: /otherpostpath RegistedAt: 2016/03/27 15:27:05:030 ...
 	}
 
 	j := fakelive.RunBackgroundScheduler()

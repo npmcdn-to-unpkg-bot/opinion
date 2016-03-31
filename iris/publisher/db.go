@@ -1,8 +1,6 @@
 package publisher
 
 import (
-
-
 	"fmt"
 
 	"github.com/boltdb/bolt"

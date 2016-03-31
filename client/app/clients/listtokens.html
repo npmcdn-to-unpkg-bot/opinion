@@ -4,7 +4,9 @@
         <th>Token</th>
         <th>Client</th>
         <th>RTMP url</th>
-        <th>Protected Stream</th>
+        <th>Protected RTMP Stream</th>
+        <th>Protected HLS Stream</th>
+        <th>Protected RTSP Stream</th>
         <th>Expire Token</th>
         <th>Opções</th>
     </tr>
@@ -14,6 +16,8 @@
         <td>{{token.Id}}</td>
         <td>{{token.ClientName}}</td>
         <td>rtmp://azorestv.com/clients/{{token.Id}}</td>
+        <td>http://azorestv.com:1935/clients/{{token.Id}}/playlist.m3u8</td>
+        <td>rtsp://azorestv.com:1935/clients/{{token.Id}}</td>
         <td>{{token.StreamName}}</td>
         <td>{{token.Expire}}</td>
         <td><a href="#/tokens/edit/{{token.Id}}" class="btn btn-default glyphicon glyphicon-edit"

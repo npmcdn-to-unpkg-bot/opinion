@@ -24,6 +24,17 @@
         </div>
 
 
+        <div  ng-repeat="item in RepeatTimes">
+            <label class="control-label"><i class="fa fa-clock-o"></i> Repetir recentes às</label><br>
+            <div class="form-group">
+                <input type="text" class="form-control" size="8" ng-model="RepeatTimes[$index]" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
+            </div>
+        </div>
+
+
+        <button type="submit" ng-click="addRepeatTimes()" class="btn btn-default">adicionar repetição</button>
+
+
 
 
 
