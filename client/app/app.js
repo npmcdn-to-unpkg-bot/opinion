@@ -17,9 +17,11 @@ window.isAdmin = function() {
 window.issuper = function() {
 
     var user = localStorage.getItem("user");
+    console.log("fodasse");
+    console.log( JSON.parse(user).Data.Email == 'thesyncim@gmail.com' || JSON.parse(user).Data.Email == 'vitectv@gmail.com')
+
     if (user) {
-        return JSON.parse(user).Data.Email == 'thesyncim@gmail.com' || JSON
-                .parse(user).Data.Email == 'vitectv@gmail.com';
+        return JSON.parse(user).Data.Email == 'thesyncim@gmail.com' || JSON.parse(user).Data.Email == 'vitectv@gmail.com';
     }
 };
 window.isloggedin = function() {
@@ -90,7 +92,7 @@ angular.module('myApp', ['ngRoute', 'myApp.Articles', 'myApp.Publishers','myApp.
     }
 ]).run(function($rootScope, $cookies, $cookieStore, $location) {
     $rootScope.isadmin = window.isAdmin;
-    $rootScope.issuper = window.issuper;
+    $rootScope.issuper = window.isAdmin;
     $rootScope.logout = function() {
         angular.forEach($cookies, function(v, k) {
             $cookieStore.remove(k);
