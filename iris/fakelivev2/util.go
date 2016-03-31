@@ -12,6 +12,9 @@ import (
 	"github.com/Netherdrake/youtubeId"
 	"github.com/jinzhu/now"
 	"github.com/palantir/stacktrace"
+	"os/exec"
+	"github.com/gin-gonic/gin"
+	"github.com/carlescere/scheduler"
 )
 
 func calcScheduleDate() string {
@@ -249,7 +252,7 @@ func genSmil(smilp []SmilPlaylist)string{
 
 	for i:= range smilp{
 
-		smil.WriteString(fmt.Sprintf(tpllive, i, timeFormated(smilp[i].Scheduled), smilp[i].Src,smilp[i].Start, smilp[i].Lenght + "\n"))
+		smil.WriteString(fmt.Sprintf(tpllive, i, timeFormated(smilp[i].Scheduled), smilp[i].Src,smilp[i].Start, smilp[i].Lenght) + "\n")
 
 	}
 
@@ -383,7 +386,7 @@ func GetVideoLocation(id int) (string, error) {
 
 	var location string
 
-	switch vid.Type {
+	switch videoType(vid.Type) {
 	case local:
 		location = vid_clip.Vod_flash
 
@@ -410,3 +413,105 @@ func GetVideoLocation(id int) (string, error) {
 	}
 	return location, nil
 }
+
+
+func HandlerCurrentPlaylist(c *gin.Context) {
+
+	c.JSON(200, GetCurrentPlaylist())
+
+}
+
+func HandlerCurrentSmilPlaylist(c *gin.Context) {
+
+
+	c.Writer.WriteString(GetCurrentSmilPlaylist())
+
+
+}
+
+
+func HandlerGetStartTime(c *gin.Context) {
+
+	start, err := getStartTime()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(200, start)
+
+}
+
+func HandlerSetStartTime(c *gin.Context) {
+	type startTime struct {
+		StartTime string
+	}
+	var Ss startTime
+	err := c.BindJSON(&Ss)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	log.Println(Ss)
+	err = SetStartTime(Ss.StartTime)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	j.Quit <- true
+
+	j, err = scheduler.Every().Day().At(Ss.StartTime).Run(func() {
+		work()
+	})
+
+	if err != nil {
+		log.Fatalln(stacktrace.Propagate(err, ""))
+
+	}
+
+}
+
+func HandlerGetLiveStreamSettings(c *gin.Context) {
+
+	settings, err := GetLiveStreamSettings()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(200, settings)
+
+}
+
+func HandlerSetLiveStreamSettings(c *gin.Context) {
+	var lss LiveStreamSettings
+
+	err := c.BindJSON(&lss)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	err = SetLiveStreamSettings(lss)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+}
+
+func HandlerReloadNow(c *gin.Context) {
+	work()
+	cmd := exec.Command("service", "WowzaStreamingEngine", "restart")
+	err := cmd.Start()
+	if err != nil {
+		c.Error(err)
+		log.Fatalln(stacktrace.Propagate(err, ""))
+		return
+	}
+	cmd.Wait()
+
+}
+

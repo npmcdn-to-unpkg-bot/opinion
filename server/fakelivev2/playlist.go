@@ -41,7 +41,7 @@ type Video struct {
 
 func SaveCurrentPlaylist(vids *Playlist) error {
 
-	return db.Update(func(tx *bolt.Tx) error {
+	return boltdb.Update(func(tx *bolt.Tx) error {
 		// Retrieve the users bucket.
 		// This should be created when the DB is first opened.
 		b := tx.Bucket(PlaylistBucket)
@@ -63,7 +63,7 @@ func SaveCurrentPlaylist(vids *Playlist) error {
 
 func GetCurrentPlaylist() *Playlist {
 	var playlist Playlist
-	err := db.View(func(tx *bolt.Tx) error {
+	err := boltdb.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket(PlaylistBucket)
 
@@ -88,7 +88,7 @@ func GetCurrentPlaylist() *Playlist {
 }
 func SaveCurrentSmilPlaylist(smil string) error {
 
-	return db.Update(func(tx *bolt.Tx) error {
+	return boltdb.Update(func(tx *bolt.Tx) error {
 		// Retrieve the users bucket.
 		// This should be created when the DB is first opened.
 		b := tx.Bucket(PlaylistBucket)
@@ -106,7 +106,7 @@ func GetCurrentSmilPlaylist() string {
 
 	var smil []byte
 
-	err := db.View(func(tx *bolt.Tx) error {
+	err := boltdb.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket(PlaylistBucket)
 

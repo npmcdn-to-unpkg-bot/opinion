@@ -13,7 +13,7 @@ type LiveStreamSettings struct {
 
 func SetStartTime(st string) error {
 
-	return db.Update(func(tx *bolt.Tx) error {
+	return boltdb.Update(func(tx *bolt.Tx) error {
 		// Retrieve the users bucket.
 		// This should be created when the DB is first opened.
 		b := tx.Bucket(PlaylistBucket)
@@ -24,7 +24,7 @@ func SetStartTime(st string) error {
 }
 func getStartTime() (res string, err error) {
 
-	err = db.View(func(tx *bolt.Tx) error {
+	err = boltdb.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket(PlaylistBucket)
 
@@ -38,7 +38,7 @@ func getStartTime() (res string, err error) {
 
 func SetLiveStreamSettings(lss LiveStreamSettings) error {
 
-	return db.Update(func(tx *bolt.Tx) error {
+	return boltdb.Update(func(tx *bolt.Tx) error {
 		// Retrieve the users bucket.
 		// This should be created when the DB is first opened.
 		b := tx.Bucket(PlaylistBucket)
@@ -54,7 +54,7 @@ func SetLiveStreamSettings(lss LiveStreamSettings) error {
 }
 func GetLiveStreamSettings() (res LiveStreamSettings, err error) {
 
-	err = db.View(func(tx *bolt.Tx) error {
+	err = boltdb.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket(PlaylistBucket)
 

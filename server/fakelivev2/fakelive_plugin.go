@@ -15,7 +15,7 @@ type FakelivePlugin struct {
 }
 
 func NewFakelivePlugin(baseURL string, authenticator iris.HandlerFunc, dbb *bolt.DB) *FakelivePlugin {
-	db = dbb
+
 	err := createBoltBuckets()
 	if err != nil {
 		log.Fatalln(err)

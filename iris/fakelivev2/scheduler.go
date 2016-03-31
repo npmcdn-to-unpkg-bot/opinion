@@ -51,7 +51,7 @@ func work() {
 	videos = firstNAndShuffle(3, videos)
 
 	smil := genSmil(genSmilPlaylistSlice(videos, calcScheduleDate()))
-
+ 
 	SaveCurrentSmilPlaylist(smil)
 
 	s, err := os.Create("/var/www/vhosts/azorestv.com/httpdocs/uploads/movies/streamschedule.smil")

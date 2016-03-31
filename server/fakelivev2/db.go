@@ -1,6 +1,8 @@
+
 package fakelive2
 
 import (
+
 	"fmt"
 	"log"
 
@@ -11,11 +13,12 @@ import (
 )
 
 var (
-	sqldb           *gorm.DB
-	db              *bolt.DB
+	boltdb              *bolt.DB
+	sqldb         *gorm.DB
 	PlaylistBucket  = []byte("Playlist")
 	PlaylistKey     = []byte("playlist")
-	PlaylistSmilKey = []byte("playlistSmil")
+	PlaylistSmilKey     = []byte("playlistSmil")
+
 	StartTimeKey    = []byte("startTime")
 	LiveSettingsKey = []byte("LiveSettings")
 	YTVideosBucket  = []byte("Youtube")
@@ -23,10 +26,10 @@ var (
 
 func createBoltBuckets() error {
 
-	err := db.Update(func(tx *bolt.Tx) error {
+	err := boltdb.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists(PlaylistBucket)
 		if err != nil {
-			return fmt.Errorf("create bucket: %s  %s", err, PlaylistBucket)
+			return fmt.Errorf("create bucket: %s", err, PlaylistBucket)
 		}
 
 		return nil
@@ -35,10 +38,10 @@ func createBoltBuckets() error {
 		return stacktrace.Propagate(err, "")
 	}
 
-	err = db.Update(func(tx *bolt.Tx) error {
+	err = boltdb.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists(YTVideosBucket)
 		if err != nil {
-			return fmt.Errorf("create bucket: %s  %s", err, YTVideosBucket)
+			return fmt.Errorf("create bucket: %s", err, YTVideosBucket)
 		}
 
 		return nil
@@ -54,6 +57,15 @@ func init() {
 	// Open the my.db data file in your current directory.
 	// It will be created if it doesn't exist.
 	var err error
+	boltdb, err = bolt.Open("playlist.db", 0600, nil)
+	if err != nil {
+		log.Fatalln(fmt.Errorf("error opening bolt DB", err))
+	}
+
+	err = createBoltBuckets()
+	if err != nil {
+		log.Fatalln(fmt.Errorf("error creating bolt bucket(s)", err))
+	}
 
 	sqldb, err = gorm.Open(
 		"mysql",
