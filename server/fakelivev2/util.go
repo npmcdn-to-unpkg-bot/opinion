@@ -149,9 +149,11 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 			Lenght :-1,
 		})
 
-		sstarttime = starttime.Add(videos[i].DurationSeconds)
+		starttime = starttime.Add(videos[i].DurationSeconds)
 
 	}
+
+	sstarttime=starttime
 
 	return smilPlaylist,sstarttime
 }
