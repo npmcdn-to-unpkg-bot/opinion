@@ -156,7 +156,7 @@ func shuffle(arr []Video) {
 func generatePlalist(videos []Video) []Video {
 
 	var selected []Video
-	targetduration := 82800 //23h
+	targetduration := 86400 //23h
 	sumdur := 0
 
 	//start at the beginning and stop at the end or when we got targetduration

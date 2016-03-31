@@ -50,7 +50,8 @@ func work() {
 
 	videos = firstNAndShuffle(3, videos)
 
-	smil := genSmil(genSmilPlaylistSlice(videos, calcScheduleDate()))
+	playlissmill,videos:=genSmilPlaylistSlice(videos, calcScheduleDate())
+	smil := genSmil(playlissmill)
  
 	SaveCurrentSmilPlaylist(smil)
 

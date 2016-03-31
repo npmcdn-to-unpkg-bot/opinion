@@ -157,7 +157,7 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 }
 
 
-func genSmilPlaylistSlice(ids []Video, startTime string)(smilPlaylist []SmilPlaylist ){
+func genSmilPlaylistSlice(ids []Video, startTime string)(smilPlaylist []SmilPlaylist,videos []Video ){
 
 
 	var StartTime time.Time
@@ -168,6 +168,8 @@ func genSmilPlaylistSlice(ids []Video, startTime string)(smilPlaylist []SmilPlay
 	var shouldContinue = true
 
 	var startLatestIndex int
+
+
 
 
 	for i := range ids {
@@ -205,10 +207,13 @@ func genSmilPlaylistSlice(ids []Video, startTime string)(smilPlaylist []SmilPlay
 						Lenght :int(playtime / time.Second),
 					})
 
+					videos=append(videos,ids[i])
+
 					StartTime = StartTime.Add(playtime)
 
                                        var vids []SmilPlaylist
 					vids,StartTime=appendLatestVideos(ids[:3],StartTime)
+					videos=append(videos,ids[:3]...)
 
 					smilPlaylist = append(smilPlaylist,vids...)
 
@@ -235,6 +240,8 @@ func genSmilPlaylistSlice(ids []Video, startTime string)(smilPlaylist []SmilPlay
 			Start :0,
 			Lenght :-1,
 		})
+
+		videos=append(videos,ids[i])
 
 		StartTime = StartTime.Add(ids[i].DurationSeconds)
 	}
