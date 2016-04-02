@@ -46,6 +46,7 @@ func getStartTime() (res string, err error) {
 	return
 }
 
+/*
 func SetLiveStreamSettings(lss FakeliveSettings) error {
 
 	return db.Update(func(tx *bolt.Tx) error {
@@ -79,6 +80,7 @@ func GetLiveStreamSettings() (res LiveStreamSettings, err error) {
 	})
 	return
 }
+*/
 
 
 

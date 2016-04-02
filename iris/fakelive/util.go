@@ -281,6 +281,7 @@ func genSmil(smilp []SmilPlaylist)string{
 
 }
 
+/*
 
 func genSmilWithLive(ids []Video, startTime string) string {
 	smil := bytes.NewBuffer([]byte(""))
@@ -388,6 +389,7 @@ func genSmilWithLive(ids []Video, startTime string) string {
 
 	return smil.String()
 }
+*/
 
 func GetVideoLocation(id int) (string, error) {
 	var vid_clip Clip_files
