@@ -36,8 +36,7 @@ func RunBackgroundScheduler() *scheduler.Job {
 }
 
 func work() {
-	//TODO remove before push
-	return
+
 	err := downloadMissingYoutubeVideos()
 	if err != nil {
 		log.Println(err)
