@@ -88,6 +88,8 @@ func getIntDuration(dur string) int {
 }
 
 type SmilPlaylist struct {
+	Title           string
+	Thumbnail       string
 	VidType   videoType
 	Scheduled time.Time
 	EndTime   time.Time
@@ -107,6 +109,8 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 		}
 
 		smilPlaylist = append(smilPlaylist, SmilPlaylist{
+			Title:videos[i].Title,
+			Thumbnail:videos[i].Thumbnail,
 			VidType:   vod,
 			Scheduled: starttime,
 			EndTime:   starttime.Add(videos[i].DurationSeconds),
@@ -171,6 +175,8 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 					playtime := ids[i].DurationSeconds - cuttime
 
 					smilPlaylist = append(smilPlaylist, SmilPlaylist{
+						Title:ids[i].Title,
+						Thumbnail:ids[i].Thumbnail,
 						VidType:   vod,
 						Scheduled: StartTime,
 						EndTime:   StartTime.Add(playtime),
@@ -204,6 +210,8 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 		}
 
 		smilPlaylist = append(smilPlaylist, SmilPlaylist{
+			Title:ids[i].Title,
+			Thumbnail:ids[i].Thumbnail,
 			VidType:   vod,
 			Scheduled: StartTime,
 			EndTime:   StartTime.Add(ids[i].DurationSeconds),

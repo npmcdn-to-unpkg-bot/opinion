@@ -68,9 +68,9 @@ func work() {
 	checkWriteErr(s.WriteString(smil))
 	defer checkErr(s.Close())
 
-	const longForm = "2006-01-02 15:04:05"
-	t, _ := time.Parse(longForm, calcScheduleDate())
-	err = SaveCurrentPlaylist(&Playlist{Videos: videos, StartTime: t})
+	//const longForm = "2006-01-02 15:04:05"
+	//t, _ := time.Parse(longForm, calcScheduleDate())
+	err = SaveCurrentPlaylist(playlissmill)
 	if err != nil {
 		log.Fatalln(stacktrace.Propagate(err, ""))
 	}

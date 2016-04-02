@@ -38,7 +38,7 @@ type Video struct {
 	Is_ad           int           `xml:"is_ad,attr"`
 }
 
-func SaveCurrentPlaylist(vids *Playlist) error {
+func SaveCurrentPlaylist(vids []SmilPlaylist) error {
 
 	return db.Update(func(tx *bolt.Tx) error {
 		// Retrieve the users bucket.
@@ -60,8 +60,8 @@ func SaveCurrentPlaylist(vids *Playlist) error {
 	})
 }
 
-func GetCurrentPlaylist() *Playlist {
-	var playlist Playlist
+func GetCurrentPlaylist()[]SmilPlaylist {
+	var playlist []SmilPlaylist
 	err := db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket(PlaylistBucket)
@@ -83,7 +83,7 @@ func GetCurrentPlaylist() *Playlist {
 		return nil
 	}
 
-	return &playlist
+	return playlist
 }
 func SaveCurrentSmilPlaylist(smil string) error {
 
