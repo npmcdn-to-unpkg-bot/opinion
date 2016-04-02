@@ -20,7 +20,8 @@ type SecureStreamPlugin struct {
 
 func NewSecureStreamPlugin(tokenURL, clientURL string, authenticator iris.HandlerFunc, dbb *bolt.DB) *SecureStreamPlugin {
 	db = dbb
-	RegisterOldClients()
+
+
 
 
 	err := createBoltBuckets()
