@@ -126,16 +126,14 @@ func ToTypeRepeatTimes(times []time.Time)(rt []RepeatTimes){
 
 
 func (*FakeliveController) GetSettings(c *iris.Context) {
-
 	settings, err := GetFakeliveSettings()
 	if err != nil {
-
+		log.Println("we got error",err)
 		c.JSON(FakeliveSettings{})
 		return
 	}
-
+	log.Println("no error")
 	c.JSON(settings)
-
 }
 
 func (*FakeliveController) SetSettings(c *iris.Context) {
