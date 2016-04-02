@@ -90,6 +90,7 @@ func getIntDuration(dur string) int {
 type SmilPlaylist struct {
 	Title           string
 	Thumbnail       string
+	Duration string
 	VidType   videoType
 	Scheduled time.Time
 	EndTime   time.Time
@@ -111,6 +112,7 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 		smilPlaylist = append(smilPlaylist, SmilPlaylist{
 			Title:videos[i].Title,
 			Thumbnail:videos[i].Thumbnail,
+			Duration:videos[i].DurationSeconds
 			VidType:   vod,
 			Scheduled: starttime,
 			EndTime:   starttime.Add(videos[i].DurationSeconds),

@@ -1,0 +1,60 @@
+<table class="table">
+
+    <thead>
+    <tr>
+        <th>Imagem</th>
+        <th>Titulo</th>
+        <th>Duração</th>
+        <th>No Ar às:</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="video in videos" ng-class='{red : video.Playing}' scroll-if="{{video.Playing}}">
+        <td><img style="height: 50px"
+                 data-ng-src="{{::video.Thumbnail}}"></td>
+        <td>{{::video.Title}}</td>
+        <td>{{::format(video.Duration)}}</td>
+        <td>{{::video.PlayingInterval}}</td>
+
+    </tr>
+    </tbody>
+</table>
+
+
+<!--<table class="table">
+    <ng-timepicker ng-model="Date"></ng-timepicker>
+    <thead>
+    <tr>
+        <th></th>
+        <th></th>
+
+
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="video in videos" >
+
+        <td>{{::video.Title}}</td>
+
+        <td>{{::video.PlayingInterval}}</td>
+
+    </tr>
+    </tbody>
+</table>-->
+
+
+
+<style type="text/css">
+    .red {
+        background-color: red;
+    }
+
+    .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+        padding: 8px;
+        line-height: 1.42857143;
+        vertical-align: top;
+        border-top: 1px solid #ddd;
+    }
+
+
+</style>

@@ -106,6 +106,8 @@ type RepeatTimes struct {
 func (r RepeatTimes) getHourSeconds() time.Time {
 	hours := fmt.Sprintf("%02d", r.At.Hour())
 	seconds := fmt.Sprintf("%02d", r.At.Second())
+
+	log.Println(now.MustParse(hours + ":" + seconds))
 	return now.MustParse(hours + ":" + seconds)
 }
 
