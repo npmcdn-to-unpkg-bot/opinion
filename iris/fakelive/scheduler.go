@@ -5,13 +5,15 @@ import (
 	"os"
 	"os/exec"
 
+
+	"fmt"
 	"github.com/carlescere/scheduler"
+	"github.com/jinzhu/now"
 	"github.com/kataras/iris"
 	"github.com/palantir/stacktrace"
 	"sort"
-	"time"
 	"sync"
-
+	"time"
 )
 
 var basedir = "/var/www/vhosts/azorestv.com/httpdocs/uploads/movies/yt"
@@ -19,12 +21,12 @@ var j *scheduler.Job
 
 func RunBackgroundScheduler() *scheduler.Job {
 	work()
-	strttm, _ := getStartTime()
-	if strttm == "" {
-		strttm = "00:00"
+	fls, _ := GetFakeliveSettings()
+	if fls.StartTime == "" {
+		fls.StartTime = "00:00"
 	}
 	var err error
-	j, err = scheduler.Every().Day().At(strttm).Run(func() {
+	j, err = scheduler.Every().Day().At(fls.StartTime).Run(func() {
 		work()
 	})
 
@@ -53,7 +55,7 @@ func work() {
 
 	videos = firstNAndShuffle(3, videos)
 
-	playlissmill,videos:=genSmilPlaylistSlice(videos, calcScheduleDate())
+	playlissmill, videos := genSmilPlaylistSlice(videos, calcScheduleDate())
 	smil := genSmil(playlissmill)
 
 	SaveCurrentSmilPlaylist(smil)
@@ -96,38 +98,30 @@ func (*FakeliveController) CurrentSmilPlaylist(c *iris.Context) {
 
 }
 
-func (*FakeliveController) GetStartTime(c *iris.Context) {
-
-	start, err := getStartTime()
-	if err != nil {
-		c.Write(err.Error())
-		return
-	}
-
-	c.JSON(start)
-
-}
-
 type RepeatTimes struct {
-	At time.Time
+	At   time.Time
 	Once sync.Once
 }
 
-func ToTypeRepeatTimes(times []time.Time)(rt []RepeatTimes){
-	rt=make([]RepeatTimes,len(times))
-	for i:= range times{
-		rt[i].At=times[i]
-		rt[i].Once= sync.Once{}
+func (r RepeatTimes) getHourSeconds() time.Time {
+	hours := fmt.Sprintf("%02d", r.At.Hour())
+	seconds := fmt.Sprintf("%02d", r.At.Second())
+	return now.MustParse(hours + ":" + seconds)
+}
+
+func ToTypeRepeatTimes(times []time.Time) (rt []RepeatTimes) {
+	rt = make([]RepeatTimes, len(times))
+	for i := range times {
+		rt[i].At = times[i]
+		rt[i].Once = sync.Once{}
 	}
 	return
 }
 
-
-
 func (*FakeliveController) GetSettings(c *iris.Context) {
 	settings, err := GetFakeliveSettings()
 	if err != nil {
-		log.Println("we got error",err)
+		log.Println("we got error", err)
 		c.JSON(FakeliveSettings{})
 		return
 	}
@@ -144,7 +138,7 @@ func (*FakeliveController) SetSettings(c *iris.Context) {
 		return
 	}
 
-	lss.RepeatTimes=ToTypeRepeatTimes(lss.RTimes)
+	lss.RepeatTimes = ToTypeRepeatTimes(lss.RTimes)
 
 	err = SetFakeliveSettings(lss)
 	if err != nil {

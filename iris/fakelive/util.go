@@ -6,7 +6,6 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/Netherdrake/youtubeId"
@@ -15,14 +14,14 @@ import (
 )
 
 func calcScheduleDate() string {
-	strttm, err := getStartTime()
+	fls, err := GetFakeliveSettings()
 	if err != nil {
-		strttm = "00:00"
+		fls.StartTime = "00:00"
 
 	}
 
-	if strttm == "" {
-		strttm = "00:00"
+	if fls.StartTime == "" {
+		fls.StartTime = "00:00"
 	}
 
 	//startminute := 00
@@ -36,7 +35,7 @@ func calcScheduleDate() string {
 	checkWriteErr(buf.WriteString("-"))
 	checkWriteErr(buf.WriteString(fmt.Sprint(now.Day())))
 	checkWriteErr(buf.WriteString(" "))
-	checkWriteErr(buf.WriteString(fmt.Sprint(strttm)))
+	checkWriteErr(buf.WriteString(fmt.Sprint(fls.StartTime)))
 	checkWriteErr(buf.WriteString(fmt.Sprint(":00")))
 	return buf.String()
 }
@@ -88,49 +87,18 @@ func getIntDuration(dur string) int {
 	return duration
 }
 
-
-
-type SmilPlaylist struct{
+type SmilPlaylist struct {
 	VidType   videoType
 	Scheduled time.Time
-	EndTime time.Time
+	EndTime   time.Time
 	Src       string
 	StartSec  int
 	Lenght    int
-
 }
 
+func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []SmilPlaylist, sstarttime time.Time) {
 
-var startLatestVideosTimes = []struct{
-	Start time.Time
-	Once sync.Once
-}{
-	{
-		now.MustParse("08:00"),
-		sync.Once{},
-
-	},
-	{
-		now.MustParse("12:00"),
-		sync.Once{},
-
-
-	},
-	{
-		now.MustParse("15:00"),
-		sync.Once{},
-
-
-	},
-
-
-}
-
-
-
-func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []SmilPlaylist, sstarttime time.Time){
-
-	for i:=range videos{
+	for i := range videos {
 
 		location, err := GetVideoLocation(videos[i].Id)
 		if err != nil {
@@ -138,46 +106,45 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 			continue
 		}
 
-		smilPlaylist=append(smilPlaylist,SmilPlaylist{
-			VidType:vod,
-			Scheduled:starttime,
-			EndTime:starttime.Add(videos[i].DurationSeconds),
-			Src:location,
-			StartSec :0,
-			Lenght :-1,
+		smilPlaylist = append(smilPlaylist, SmilPlaylist{
+			VidType:   vod,
+			Scheduled: starttime,
+			EndTime:   starttime.Add(videos[i].DurationSeconds),
+			Src:       location,
+			StartSec:  0,
+			Lenght:    -1,
 		})
 
 		starttime = starttime.Add(videos[i].DurationSeconds)
 
 	}
 
-	sstarttime=starttime
+	sstarttime = starttime
 
-	return smilPlaylist,sstarttime
+	return smilPlaylist, sstarttime
 }
 
+func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPlaylist, videos []Video) {
 
-func genSmilPlaylistSlice(ids []Video, startTime string)(smilPlaylist []SmilPlaylist,videos []Video ){
+	settings, err := GetFakeliveSettings()
+	if err != nil {
+		log.Fatalln(err)
+	}
 
+	startLatestVideosTimes := settings.RepeatTimes
 
 	var StartTime time.Time
 
-
-
 	StartTime = now.MustParse(startTime)
-	StartPlaylistTime:=StartTime
-
+	StartPlaylistTime := StartTime
 
 	var shouldContinue = true
 
 	var startLatestIndex int
 
-
-
-
 	for i := range ids {
 
-		if StartPlaylistTime.Add(24*time.Hour).Before(StartTime){
+		if StartPlaylistTime.Add(24 * time.Hour).Before(StartTime) {
 			break
 		}
 
@@ -193,35 +160,34 @@ func genSmilPlaylistSlice(ids []Video, startTime string)(smilPlaylist []SmilPlay
 
 			endVideoTime := StartTime.Add(ids[i].DurationSeconds)
 
-			log.Println(endVideoTime,startLatestVideosTimes[startLatestIndex].Start)
+			log.Println(endVideoTime, startLatestVideosTimes[startLatestIndex].getHourSeconds())
 
 			//the livestream starts before the end of the vod
-			if endVideoTime.After(startLatestVideosTimes[startLatestIndex].Start) {
+			if endVideoTime.After(startLatestVideosTimes[startLatestIndex].getHourSeconds()) {
 				startLatestVideosTimes[startLatestIndex].Once.Do(func() {
 					//TODO resolv this mess <
-					cuttime := endVideoTime.Sub(startLatestVideosTimes[startLatestIndex].Start)
+					cuttime := endVideoTime.Sub(startLatestVideosTimes[startLatestIndex].getHourSeconds())
 
 					playtime := ids[i].DurationSeconds - cuttime
 
 					smilPlaylist = append(smilPlaylist, SmilPlaylist{
-						VidType:vod,
-						Scheduled:StartTime,
-						EndTime:StartTime.Add(playtime),
-						Src:location,
-						StartSec :0,
-						Lenght :int(playtime / time.Second),
+						VidType:   vod,
+						Scheduled: StartTime,
+						EndTime:   StartTime.Add(playtime),
+						Src:       location,
+						StartSec:  0,
+						Lenght:    int(playtime / time.Second),
 					})
 
-					videos=append(videos,ids[i])
+					videos = append(videos, ids[i])
 
 					StartTime = StartTime.Add(playtime)
 
 					var vids []SmilPlaylist
-					vids,StartTime=appendLatestVideos(ids[:3],StartTime)
-					videos=append(videos,ids[:3]...)
+					vids, StartTime = appendLatestVideos(ids[:3], StartTime)
+					videos = append(videos, ids[:3]...)
 
-					smilPlaylist = append(smilPlaylist,vids...)
-
+					smilPlaylist = append(smilPlaylist, vids...)
 
 					shouldContinue = true
 					startLatestIndex++
@@ -237,17 +203,16 @@ func genSmilPlaylistSlice(ids []Video, startTime string)(smilPlaylist []SmilPlay
 			}
 		}
 
-
-		smilPlaylist=append(smilPlaylist,SmilPlaylist{
-			VidType:vod,
-			Scheduled:StartTime,
-			EndTime: StartTime.Add(ids[i].DurationSeconds),
-			Src:location,
-			StartSec :0,
-			Lenght :-1,
+		smilPlaylist = append(smilPlaylist, SmilPlaylist{
+			VidType:   vod,
+			Scheduled: StartTime,
+			EndTime:   StartTime.Add(ids[i].DurationSeconds),
+			Src:       location,
+			StartSec:  0,
+			Lenght:    -1,
 		})
 
-		videos=append(videos,ids[i])
+		videos = append(videos, ids[i])
 
 		StartTime = StartTime.Add(ids[i].DurationSeconds)
 	}
@@ -255,7 +220,7 @@ func genSmilPlaylistSlice(ids []Video, startTime string)(smilPlaylist []SmilPlay
 	return
 }
 
-func genSmil(smilp []SmilPlaylist)string{
+func genSmil(smilp []SmilPlaylist) string {
 	const tpllive = `<playlist name="pl%d" playOnStream="fakelive" repeat="true" scheduled="%s">
 			<video src="%s" start="%d" length="%d"/>
 		</playlist>`
@@ -269,9 +234,9 @@ func genSmil(smilp []SmilPlaylist)string{
 
 `)
 
-	for i:= range smilp{
+	for i := range smilp {
 
-		smil.WriteString(fmt.Sprintf(tpllive, i, timeFormated(smilp[i].Scheduled), smilp[i].Src,smilp[i].StartSec, smilp[i].Lenght) + "\n")
+		smil.WriteString(fmt.Sprintf(tpllive, i, timeFormated(smilp[i].Scheduled), smilp[i].Src, smilp[i].StartSec, smilp[i].Lenght) + "\n")
 
 	}
 

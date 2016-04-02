@@ -11,15 +11,15 @@ import (
 )
 
 var (
-	sqldb           *gorm.DB
-	db              *bolt.DB
-	PlaylistBucket  = []byte("Playlist")
-	PlaylistKey     = []byte("playlist")
-	PlaylistSmilKey = []byte("playlistSmil")
-	StartTimeKey    = []byte("startTime")
-	LiveSettingsKey = []byte("LiveSettings")
+	sqldb               *gorm.DB
+	db                  *bolt.DB
+	PlaylistBucket      = []byte("Playlist")
+	PlaylistKey         = []byte("playlist")
+	PlaylistSmilKey     = []byte("playlistSmil")
+	StartTimeKey        = []byte("startTime")
+	LiveSettingsKey     = []byte("LiveSettings")
 	FakeLiveSettingsKey = []byte("FakeliveSettings")
-	YTVideosBucket  = []byte("Youtube")
+	YTVideosBucket      = []byte("Youtube")
 )
 
 func createBoltBuckets() error {
