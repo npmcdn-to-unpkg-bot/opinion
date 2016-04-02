@@ -106,7 +106,7 @@ func GetFakeliveSettings() (res FakeliveSettings, err error) {
 		b := tx.Bucket(PlaylistBucket)
 
 		byteRes := b.Get(FakeLiveSettingsKey)
-		log.Println(byteRes)
+		log.Println("result ",byteRes)
 		if byteRes==nil{
 			return nil
 		}
