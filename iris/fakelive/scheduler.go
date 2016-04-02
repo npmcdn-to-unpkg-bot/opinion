@@ -130,7 +130,7 @@ func (*FakeliveController) GetSettings(c *iris.Context) {
 	settings, err := GetFakeliveSettings()
 	if err != nil {
 
-		c.JSON(settings)
+		c.JSON(FakeliveSettings{})
 		return
 	}
 
