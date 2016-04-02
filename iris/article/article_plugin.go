@@ -59,13 +59,17 @@ func (i *ArticlesPlugin) PostHandle(route iris.IRoute) {
 func (i *ArticlesPlugin) PreListen(s *iris.Station) {
 	article := s.Party(i.BaseUrl)
 	//article.Use(i.Authenticator)
-	article.Post("/create", i.ArticlesController.Create)
-	article.Post("/edit/:id", i.ArticlesController.Edit)
+	article.Post("/create", i.Authenticator, i.ArticlesController.Create)
+
+	article.Post("/edit/:id", i.Authenticator, i.ArticlesController.Edit)
+
 	article.Get("/getid/:id", i.ArticlesController.GetId)
-	article.Post("/delete/:id", i.ArticlesController.Delete)
-	article.Post("/publisher/:id", i.ArticlesController.GetPublisher)
-	article.Get("/listall", i.ArticlesController.ListAll)
-	article.Get("/listfrontend", i.ArticlesController.ListFrontend)
+	article.Post("/delete/:id", i.Authenticator, i.ArticlesController.Delete)
+
+	article.Post("/publisher/:id", i.Authenticator, i.ArticlesController.GetPublisher)
+
+	article.Get("/listall", i.Authenticator, i.ArticlesController.ListAll)
+	article.Get("/listfrontend", i.Authenticator, i.ArticlesController.ListFrontend)
 
 	articlesFrontend := s.Party(i.BaseUrl + "f")
 	articlesFrontend.Get("/getid/:id", i.ArticlesController.GetId)

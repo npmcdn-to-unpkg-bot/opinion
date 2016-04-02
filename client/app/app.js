@@ -17,8 +17,8 @@ window.isAdmin = function() {
 window.issuper = function() {
 
     var user = localStorage.getItem("user");
-    console.log("fodasse");
-    console.log( JSON.parse(user).Data.Email == 'thesyncim@gmail.com' || JSON.parse(user).Data.Email == 'vitectv@gmail.com')
+
+
 
     if (user) {
         return JSON.parse(user).Data.Email == 'thesyncim@gmail.com' || JSON.parse(user).Data.Email == 'vitectv@gmail.com';
@@ -32,8 +32,8 @@ window.isloggedin = function() {
     }
     return false;
 };
-window.hostname = 'http://opinion.azorestv.com/api/';
-/*window.hostname = 'http://localhost:9999/';*/
+/*window.hostname = 'http://opinion.azorestv.com/api/';*/
+window.hostname = 'http://localhost:9999/';
 window.hostnametpl = '';
 angular.module('myApp', ['ngRoute', 'myApp.Articles', 'myApp.Publishers','myApp.Clients',
     'myApp.Playlist', 'myApp.Auth', 'wysiwyg.module', 'angularMoment',

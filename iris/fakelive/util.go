@@ -88,6 +88,200 @@ func getIntDuration(dur string) int {
 	return duration
 }
 
+
+
+type SmilPlaylist struct{
+	VidType   videoType
+	Scheduled time.Time
+	EndTime time.Time
+	Src       string
+	StartSec  int
+	Lenght    int
+
+}
+
+
+var startLatestVideosTimes = []struct{
+	Start time.Time
+	Once sync.Once
+}{
+	{
+		now.MustParse("08:00"),
+		sync.Once{},
+
+	},
+	{
+		now.MustParse("12:00"),
+		sync.Once{},
+
+
+	},
+	{
+		now.MustParse("15:00"),
+		sync.Once{},
+
+
+	},
+
+
+}
+
+
+
+func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []SmilPlaylist, sstarttime time.Time){
+
+	for i:=range videos{
+
+		location, err := GetVideoLocation(videos[i].Id)
+		if err != nil {
+			log.Println(stacktrace.Propagate(err, "video id : %d", videos[i].Id))
+			continue
+		}
+
+		smilPlaylist=append(smilPlaylist,SmilPlaylist{
+			VidType:vod,
+			Scheduled:starttime,
+			EndTime:starttime.Add(videos[i].DurationSeconds),
+			Src:location,
+			StartSec :0,
+			Lenght :-1,
+		})
+
+		starttime = starttime.Add(videos[i].DurationSeconds)
+
+	}
+
+	sstarttime=starttime
+
+	return smilPlaylist,sstarttime
+}
+
+
+func genSmilPlaylistSlice(ids []Video, startTime string)(smilPlaylist []SmilPlaylist,videos []Video ){
+
+
+	var StartTime time.Time
+
+
+
+	StartTime = now.MustParse(startTime)
+	StartPlaylistTime:=StartTime
+
+
+	var shouldContinue = true
+
+	var startLatestIndex int
+
+
+
+
+	for i := range ids {
+
+		if StartPlaylistTime.Add(24*time.Hour).Before(StartTime){
+			break
+		}
+
+		location, err := GetVideoLocation(ids[i].Id)
+		if err != nil {
+			log.Println(stacktrace.Propagate(err, "video id : %d", ids[i].Id))
+			continue
+		}
+		//
+		if startLatestIndex < len(startLatestVideosTimes) {
+
+			//check if at the end of the video we pass the startstream time
+
+			endVideoTime := StartTime.Add(ids[i].DurationSeconds)
+
+			log.Println(endVideoTime,startLatestVideosTimes[startLatestIndex].Start)
+
+			//the livestream starts before the end of the vod
+			if endVideoTime.After(startLatestVideosTimes[startLatestIndex].Start) {
+				startLatestVideosTimes[startLatestIndex].Once.Do(func() {
+					//TODO resolv this mess <
+					cuttime := endVideoTime.Sub(startLatestVideosTimes[startLatestIndex].Start)
+
+					playtime := ids[i].DurationSeconds - cuttime
+
+					smilPlaylist = append(smilPlaylist, SmilPlaylist{
+						VidType:vod,
+						Scheduled:StartTime,
+						EndTime:StartTime.Add(playtime),
+						Src:location,
+						StartSec :0,
+						Lenght :int(playtime / time.Second),
+					})
+
+					videos=append(videos,ids[i])
+
+					StartTime = StartTime.Add(playtime)
+
+					var vids []SmilPlaylist
+					vids,StartTime=appendLatestVideos(ids[:3],StartTime)
+					videos=append(videos,ids[:3]...)
+
+					smilPlaylist = append(smilPlaylist,vids...)
+
+
+					shouldContinue = true
+					startLatestIndex++
+
+				})
+
+				if shouldContinue {
+					shouldContinue = false
+					continue
+				}
+				//calculate when we need to stop the vod
+
+			}
+		}
+
+
+		smilPlaylist=append(smilPlaylist,SmilPlaylist{
+			VidType:vod,
+			Scheduled:StartTime,
+			EndTime: StartTime.Add(ids[i].DurationSeconds),
+			Src:location,
+			StartSec :0,
+			Lenght :-1,
+		})
+
+		videos=append(videos,ids[i])
+
+		StartTime = StartTime.Add(ids[i].DurationSeconds)
+	}
+
+	return
+}
+
+func genSmil(smilp []SmilPlaylist)string{
+	const tpllive = `<playlist name="pl%d" playOnStream="fakelive" repeat="true" scheduled="%s">
+			<video src="%s" start="%d" length="%d"/>
+		</playlist>`
+	smil := bytes.NewBuffer([]byte(""))
+	smil.WriteString(
+		`<smil>
+		    <head>
+            </head>
+            <body>
+                <stream name="fakelive"></stream>
+
+`)
+
+	for i:= range smilp{
+
+		smil.WriteString(fmt.Sprintf(tpllive, i, timeFormated(smilp[i].Scheduled), smilp[i].Src,smilp[i].StartSec, smilp[i].Lenght) + "\n")
+
+	}
+
+	smil.WriteString(`</body></smil>`)
+
+	return smil.String()
+
+}
+
+
 func genSmilWithLive(ids []Video, startTime string) string {
 	smil := bytes.NewBuffer([]byte(""))
 	_, err := smil.WriteString(
@@ -211,7 +405,7 @@ func GetVideoLocation(id int) (string, error) {
 
 	var location string
 
-	switch vid.Type {
+	switch videoType(vid.Type) {
 	case local:
 		location = vid_clip.Vod_flash
 

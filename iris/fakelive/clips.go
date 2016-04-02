@@ -1,7 +1,7 @@
 package fakelive
-
+type videoType int
 const (
-	local = iota
+	local videoType = iota
 	vod
 	live
 	embedclip

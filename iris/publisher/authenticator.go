@@ -110,8 +110,7 @@ func AngularAuth(db *bolt.DB) iris.HandlerFunc {
 	return func(c *iris.Context) {
 		err := Auther(c, db)
 		if err != nil {
-			c.Status(http.StatusUnauthorized)
-			c.JSON(NewFailResponse(err))
+			c.RenderJSON(http.StatusUnauthorized, NewFailResponse(err))
 			return
 		}
 	}
@@ -160,8 +159,7 @@ func AngularSignIn(coll *bolt.DB, findUser FindUser, cPass ConvertPassword, expi
 	return func(c *iris.Context) {
 		err := Signer(c, coll, findUser, cPass, expireTime)
 		if err != nil {
-			c.Status(http.StatusUnauthorized)
-			c.JSON(NewFailResponse(err))
+			c.RenderJSON(http.StatusUnauthorized, NewFailResponse(err))
 		}
 	}
 }

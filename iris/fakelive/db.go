@@ -18,6 +18,7 @@ var (
 	PlaylistSmilKey = []byte("playlistSmil")
 	StartTimeKey    = []byte("startTime")
 	LiveSettingsKey = []byte("LiveSettings")
+	FakeLiveSettingsKey = []byte("FakeliveSettings")
 	YTVideosBucket  = []byte("Youtube")
 )
 

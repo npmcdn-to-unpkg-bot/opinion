@@ -169,7 +169,7 @@ func generatePlalist(videos []Video) []Video {
 		}
 		var dur int
 
-		if videos[i].Type == embedclip {
+		if videoType(videos[i].Type) == embedclip {
 
 			if val, ok := Platform2Youtube[int64(videos[i].Id)]; ok {
 				var err error

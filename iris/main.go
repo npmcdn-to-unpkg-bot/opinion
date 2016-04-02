@@ -1,7 +1,5 @@
 package main
 
-import ()
-
 type Config struct{}
 
 func main() {

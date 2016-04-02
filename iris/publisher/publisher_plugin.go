@@ -60,12 +60,17 @@ func (i *PublisherPlugin) PostHandle(route iris.IRoute) {
 func (i *PublisherPlugin) PreListen(s *iris.Station) {
 	pub := s.Party(i.BaseUrl)
 
+	//TODO delete options methods
+
 	pub.Post("/create", i.PublisherController.Create)
+
 	//pub.Post("/create", i.Authenticator, i.PublisherController.Create)
 	//pub.Post("/edit/:id", i.Authenticator, i.PublisherController.Edit)
 	pub.Post("/edit/:id", i.PublisherController.Edit)
+
 	pub.Get("/getid/:id", i.PublisherController.GetId)
 	pub.Post("/delete/:id", i.PublisherController.Delete)
+
 	//pub.Post("/delete/:id", i.Authenticator, i.PublisherController.Delete)
 	pub.Get("/listall", i.PublisherController.ListAll)
 	pub.Get("/publisher/image/:id", i.PublisherController.GetImage)

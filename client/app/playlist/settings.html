@@ -5,38 +5,33 @@
     <form>
         <label class="control-label"><i class="fa fa-clock-o"></i> Hora Inicio Playlist GMT</label><br>
         <div class="form-group">
-            <input type="text" class="form-control" size="8" ng-model="StartTime" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
+            <input type="text" class="form-control" size="8" ng-model="FakeliveSettings.StartTime" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
         </div>
 
         <label class="control-label">Incluir Directo</label><br>
         <div class="form-group">
-            <input type="checkbox" ng-model="LiveSettings.Activated">
+            <input type="checkbox" ng-model="FakeliveSettings.LiveStreamSettings.Activated">
         </div>
 
-        <label class="control-label" ng-if="LiveSettings.Activated"><i class="fa fa-clock-o"></i> Hora Inicio Directo GMT</label><br>
-        <div class="form-group"  ng-if="LiveSettings.Activated">
-            <input type="text" class="form-control" size="8" ng-model="LiveSettings.StartTime" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
+        <label class="control-label" ng-if="FakeliveSettings.LiveStreamSettings.Activated"><i class="fa fa-clock-o"></i> Hora Inicio Directo GMT</label><br>
+        <div class="form-group"  ng-if="FakeliveSettings.LiveStreamSettings.Activated">
+            <input type="text" class="form-control" size="8" ng-model="FakeliveSettings.LiveStreamSettings.StartLiveTime" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
         </div>
 
-        <label class="control-label"  ng-if="LiveSettings.Activated"> Hora Fim Directo GMT</label><br>
-        <div class="form-group"  ng-if="LiveSettings.Activated">
-            <input type="text" class="form-control" size="8" ng-model="LiveSettings.EndTime" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
+        <label class="control-label"  ng-if="FakeliveSettings.LiveStreamSettings.Activated"> Hora Fim Directo GMT</label><br>
+        <div class="form-group"  ng-if="FakeliveSettings.LiveStreamSettings.Activated">
+            <input type="text" class="form-control" size="8" ng-model="FakeliveSettings.LiveStreamSettings.EndLiveTime" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
         </div>
 
 
-        <div  ng-repeat="item in RepeatTimes">
+        <div ng-repeat="item in FakeliveSettings.RTimes">
             <label class="control-label"><i class="fa fa-clock-o"></i> Repetir recentes às</label><br>
             <div class="form-group">
-                <input type="text" class="form-control" size="8" ng-model="RepeatTimes[$index]" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
+                <i ng-click="removeRTime($index)" class="glyphicon glyphicon-remove"></i><input type="text" class="form-control" size="8" ng-model="FakeliveSettings.RTimes[$index]" bs-timepicker data-time-format="HH:mm" data-length="1" data-minute-step="1" data-arrow-behavior="picker">
             </div>
         </div>
 
-
         <button type="submit" ng-click="addRepeatTimes()" class="btn btn-default">adicionar repetição</button>
-
-
-
-
 
         <button type="submit" ng-click="updateSettings()" class="btn btn-default">Submit</button>
 

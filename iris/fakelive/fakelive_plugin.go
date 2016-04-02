@@ -60,10 +60,15 @@ func (i *FakelivePlugin) PreListen(s *iris.Station) {
 	fake := s.Party(i.BaseUrl)
 	fake.Get("/getplaylist", i.FakeliveController.CurrentPlaylist)
 	fake.Get("/getsmilplaylist", i.FakeliveController.CurrentSmilPlaylist)
-	fake.Get("/starttime", i.FakeliveController.GetStartTime)
-	fake.Get("/livestreamset", i.FakeliveController.GetLiveStreamSettings)
-	fake.Post("/starttime", i.Authenticator, i.FakeliveController.SetStartTime)
-	fake.Post("/livestreamset", i.Authenticator, i.FakeliveController.SetLiveStreamSettings)
+	//fake.Get("/starttime", i.FakeliveController.GetStartTime)
+	//fake.Get("/livestreamset", i.FakeliveController.GetLiveStreamSettings)
+	//fake.Post("/starttime", i.Authenticator, i.FakeliveController.SetStartTime)
+	fake.Post("/settings", i.Authenticator, i.FakeliveController.SetSettings)
+	fake.Get("/settings", i.Authenticator, i.FakeliveController.GetSettings)
+
+	//fake.Post("/livestreamset", i.Authenticator, i.FakeliveController.SetLiveStreamSettings)
+
 	fake.Post("/reload", i.Authenticator, i.FakeliveController.ReloadNow)
+
 	i.container.Printf("Plugin fakelive registered \n")
 }

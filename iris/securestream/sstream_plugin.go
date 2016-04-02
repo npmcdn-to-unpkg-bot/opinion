@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/iris"
 
 	"log"
+	"time"
 )
 
 type SecureStreamPlugin struct {
@@ -19,6 +20,8 @@ type SecureStreamPlugin struct {
 
 func NewSecureStreamPlugin(tokenURL, clientURL string, authenticator iris.HandlerFunc, dbb *bolt.DB) *SecureStreamPlugin {
 	db = dbb
+	RegisterOldClients()
+
 
 	err := createBoltBuckets()
 	if err != nil {
@@ -67,19 +70,58 @@ func (i *SecureStreamPlugin) PreListen(s *iris.Station) {
 
 	tokens := s.Party(i.TokenBaseUrl)
 	tokens.Post("/create", i.TokenController.Create)
+
 	tokens.Post("/update/:id", i.TokenController.Update)
+
 	tokens.Post("/delete/:id", i.TokenController.Delete)
+
 	tokens.Get("/get/:id", i.TokenController.Read)
 	tokens.Get("/getall", i.TokenController.ReadAll)
 
 	clients := s.Party(i.ClientBaseUrl)
 	clients.Post("/create", i.ClientController.Create)
+
 	clients.Post("/update/:id", i.ClientController.Update)
+
 	clients.Post("/delete/:id", i.ClientController.Delete)
+
 	clients.Get("/get/:id", i.ClientController.Read)
 	clients.Get("/getall", i.ClientController.ReadAll)
 
-	i.container.Printf("Plugin secuestream registered \n")
+	i.container.Printf("Plugin securestream registered \n")
 }
+
+func RegisterOldClients()  {
+	var client = &Client{}
+	client.Created=time.Now()
+	client.Email="mediaptvtk@gmail.com"
+	client.Name="Media PTV"
+	client.Save()
+
+
+	var token =&Token{}
+	token.ClientId=client.Id
+	token.ClientName=client.Name
+	token.Expire=time.Now().Add(24*30*time.Hour)
+	token.StreamName="fakelive"
+	token.Id="56f1914d1756e507a3000006"
+	token.Save()
+
+	client = &Client{}
+	client.Created=time.Now()
+	client.Email="carlos@soltv.ca"
+	client.Name="Sol TV"
+	client.Save()
+
+	token =&Token{}
+	token.ClientId=client.Id
+	token.ClientName=client.Name
+	token.Expire=time.Now().Add(24*30*time.Hour)
+	token.StreamName="fakelive"
+	token.Id="56f70bfb1756e507a3000008"
+	token.Save()
+
+}
+
 
 //

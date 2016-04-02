@@ -16,6 +16,7 @@ import (
 	"image"
 	"image/jpeg"
 	"labix.org/v2/mgo/bson"
+	"net/http"
 	"strings"
 )
 
@@ -119,6 +120,7 @@ func (ArticlesController) Create(c *iris.Context) {
 	err := c.ReadJSON(&a)
 	if err != nil {
 		c.Write(err.Error())
+		log.Println(err)
 		return
 	}
 
@@ -128,18 +130,24 @@ func (ArticlesController) Create(c *iris.Context) {
 	}
 
 	p := a.Publisher(a.Publisherid)
+
+	log.Println(&a == nil, p == nil)
 	a.PublisherName = p.Name
 
 	a.Date = time.Now()
 	a.Updated = time.Now()
 
-	tmp, err := resizeImage(&a.Image.Base64)
-	if err != nil {
-		c.Write(err.Error())
-		return
-	}
+	if a.Image != nil {
 
-	a.Image.Base64 = *tmp
+		tmp, err := resizeImage(&a.Image.Base64)
+		if err != nil {
+			c.Write(err.Error())
+			return
+		}
+
+		a.Image.Base64 = *tmp
+
+	}
 
 	buf, err := json.Marshal(a)
 	if err != nil {
@@ -241,8 +249,7 @@ func (ArticlesController) GetPublisher(c *iris.Context) {
 	p := a.Publisher(id)
 
 	if p == nil {
-		c.Status(500)
-		c.JSON("invalid publisher")
+		c.RenderJSON(http.StatusInternalServerError, "invalid publisher")
 
 		return
 	}

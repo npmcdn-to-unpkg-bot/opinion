@@ -1,6 +1,9 @@
 'use strict';
 function string2date(strdate) {
 
+    if (!strdate)
+        return new Date();
+
     if (strdate.indexOf(":") > -1) {
         var date = strdate.split(":");
         var hour, minute;
@@ -11,7 +14,7 @@ function string2date(strdate) {
         d.setMinutes(minute);
         return d
     }
-    return new Date();
+
 
 
 }
@@ -184,25 +187,43 @@ angular.module('myApp.Playlist', ['ngRoute'])
     }]).controller('Settings', ['$scope', '$http', 'toastr', function ($scope, $http, toastr) {
 
 
-    $scope.StartTime = '';
-    $scope.LiveSettings = {StartLiveTime: new Date(), EndLiveTime: new Date()};
+    $scope.FakeliveSettings={
+        LiveStreamSettings:  {StartLiveTime: new Date(), EndLiveTime: new Date()},
+        StartTime:'',
+        RTimes:[]
+    };
 
-    $scope.RepeatTimes = [];
+    $scope.removeRTime=function(index){
+        $scope.FakeliveSettings.RTimes.splice(index, 1);
+    };
+
+
 
     $scope.addRepeatTimes=function(){
 
-        $scope.RepeatTimes.push({});
+        $scope.FakeliveSettings.RTimes.push(new Date());
 
     };
+
 
     var update = function () {
         $http({
             method: 'GET',
-            url: window.hostname + 'fakelive/starttime'
+            url: window.hostname + 'fakelive/settings'
         }).then(function successCallback(response) {
-            console.log(response)
-            $scope.StartTime = string2date(response.data)
-            console.log(string2date(response.data))
+            $scope.FakeliveSettings=response.data;
+
+            $scope.FakeliveSettings.StartTime = string2date($scope.FakeliveSettings.StartTime);
+            $scope.FakeliveSettings.LiveStreamSettings.StartLiveTime = string2date($scope.FakeliveSettings.LiveStreamSettings.StartLiveTime)
+            $scope.FakeliveSettings.LiveStreamSettings.EndLiveTime = string2date($scope.FakeliveSettings.LiveStreamSettings.EndLiveTime)
+            if ($scope.FakeliveSettings.RTimes ==null) {
+
+
+                $scope.FakeliveSettings.RTimes=[];
+
+            }
+
+
 
             // $scope.StartTime=response.data.StartTime
 
@@ -214,23 +235,7 @@ angular.module('myApp.Playlist', ['ngRoute'])
             // or server returns response with an error status.
         });
 
-        $http({
-            method: 'GET',
-            url: window.hostname + 'fakelive/livestreamset'
 
-        }).then(function successCallback(response) {
-            console.log(response);
-            $scope.LiveSettings = response.data;
-            console.log($scope.LiveSettings)
-            $scope.LiveSettings.StartTime = string2date(response.data.StartTime)
-            $scope.LiveSettings.EndTime = string2date(response.data.EndTime)
-            // this callback will be called asynchronously
-            // when the response is available
-        }, function errorCallback(response) {
-            console.log(response);
-            // called asynchronously if an error occurs
-            // or server returns response with an error status.
-        });
     };
     update();
 
@@ -260,18 +265,23 @@ angular.module('myApp.Playlist', ['ngRoute'])
             // or server returns response with an error status.
         });
 
-    }
+    };
 
 
     $scope.updateSettings = function () {
 
+        $scope.FakeliveSettings.StartTime=date2string($scope.FakeliveSettings.StartTime);
+        $scope.FakeliveSettings.LiveStreamSettings.StartLiveTime=date2string($scope.FakeliveSettings.LiveStreamSettings.StartLiveTime);
+        $scope.FakeliveSettings.LiveStreamSettings.EndLiveTime=date2string($scope.FakeliveSettings.LiveStreamSettings.EndLiveTime);
+
         $http({
             method: 'POST',
-            url: window.hostname + 'fakelive/starttime',
-            data: {StartTime: date2string($scope.StartTime)},
+            url: window.hostname + 'fakelive/settings',
+            data:$scope.FakeliveSettings,
         }).then(function successCallback(response) {
             console.log(response);
-            toastr.success('Success!', 'Hora de inicio alterada');
+            toastr.success('Success!', 'Definicoes guardadas');
+            update();
 
             // this callback will be called asynchronously
             // when the response is available
@@ -281,47 +291,11 @@ angular.module('myApp.Playlist', ['ngRoute'])
             // or server returns response with an error status.
         });
 
-        $http({
-            method: 'POST',
-            url: window.hostname + 'fakelive/livestreamset',
-            data: {
-                StartTime: date2string($scope.LiveSettings.StartTime),
-                EndTime: date2string($scope.LiveSettings.EndTime),
-                Activated: $scope.LiveSettings.Activated
-            },
-        }).then(function successCallback(response) {
-            toastr.success('Success!', 'Definições Do directo alteradas');
-            console.log(response);
-
-            // this callback will be called asynchronously
-            // when the response is available
-        }, function errorCallback(response) {
-            console.log(response);
-            // called asynchronously if an error occurs
-            // or server returns response with an error status.
-        });
-
-    }
-
-
-    $scope.updateStartTime = function (start) {
-        console.log(date2string(start));
-        $http({
-            method: 'POST',
-            url: window.hostname + 'fakelive/starttime',
-            data: {StartTime: date2string($scope.StartTime)},
-        }).then(function successCallback(response) {
-            console.log(response);
-
-            // this callback will be called asynchronously
-            // when the response is available
-        }, function errorCallback(response) {
-            console.log(response);
-            // called asynchronously if an error occurs
-            // or server returns response with an error status.
-        });
 
     };
+
+
+
 
 
 }]);

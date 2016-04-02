@@ -10,6 +10,8 @@ import (
 	"github.com/palantir/stacktrace"
 	"sort"
 	"time"
+	"sync"
+
 )
 
 var basedir = "/var/www/vhosts/azorestv.com/httpdocs/uploads/movies/yt"
@@ -52,7 +54,8 @@ func work() {
 
 	videos = firstNAndShuffle(3, videos)
 
-	smil := genSmilWithLive(videos, calcScheduleDate())
+	playlissmill,videos:=genSmilPlaylistSlice(videos, calcScheduleDate())
+	smil := genSmil(playlissmill)
 
 	SaveCurrentSmilPlaylist(smil)
 
@@ -106,40 +109,25 @@ func (*FakeliveController) GetStartTime(c *iris.Context) {
 
 }
 
-func (*FakeliveController) SetStartTime(c *iris.Context) {
-	type startTime struct {
-		StartTime string
-	}
-	var Ss startTime
-	err := c.ReadJSON(&Ss)
-	if err != nil {
-		c.Write(err.Error())
-		return
-	}
-
-	log.Println(Ss)
-	err = SetStartTime(Ss.StartTime)
-	if err != nil {
-		c.Write(err.Error())
-		return
-	}
-
-	j.Quit <- true
-
-	j, err = scheduler.Every().Day().At(Ss.StartTime).Run(func() {
-		work()
-	})
-
-	if err != nil {
-		log.Fatalln(stacktrace.Propagate(err, ""))
-
-	}
-
+type RepeatTimes struct {
+	At time.Time
+	Once sync.Once
 }
 
-func (*FakeliveController) GetLiveStreamSettings(c *iris.Context) {
+func ToTypeRepeatTimes(times []time.Time)(rt []RepeatTimes){
+	rt=make([]RepeatTimes,len(times))
+	for i:= range times{
+		rt[i].At=times[i]
+		rt[i].Once= sync.Once{}
+	}
+	return
+}
 
-	settings, err := GetLiveStreamSettings()
+
+
+func (*FakeliveController) GetSettings(c *iris.Context) {
+
+	settings, err := GetFakeliveSettings()
 	if err != nil {
 		c.Write(err.Error())
 		return
@@ -149,8 +137,8 @@ func (*FakeliveController) GetLiveStreamSettings(c *iris.Context) {
 
 }
 
-func (*FakeliveController) SetLiveStreamSettings(c *iris.Context) {
-	var lss LiveStreamSettings
+func (*FakeliveController) SetSettings(c *iris.Context) {
+	var lss FakeliveSettings
 
 	err := c.ReadJSON(&lss)
 	if err != nil {
@@ -158,7 +146,9 @@ func (*FakeliveController) SetLiveStreamSettings(c *iris.Context) {
 		return
 	}
 
-	err = SetLiveStreamSettings(lss)
+	lss.RepeatTimes=ToTypeRepeatTimes(lss.RTimes)
+
+	err = SetFakeliveSettings(lss)
 	if err != nil {
 		c.Write(err.Error())
 		return

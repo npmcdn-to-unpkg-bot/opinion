@@ -81,7 +81,10 @@ type Token struct {
 }
 
 func (t *Token) Save() error {
-	t.Id = bson.NewObjectId().Hex()
+	if t.Id==""{
+		t.Id = bson.NewObjectId().Hex()
+	}
+
 	t.ClientName = new(Client).Get(t.ClientId).Name
 	return db.Update(func(tx *bolt.Tx) error {
 		// Retrieve the users bucket.
