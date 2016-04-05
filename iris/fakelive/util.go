@@ -295,8 +295,8 @@ func genSmil(smilp []SmilPlaylist) string {
 
 		var lenght = -1
 
-		if smilp[i].EndTimeSeconds!=0{
-			lenght=smilp[i].EndTimeSeconds-smilp[i].StartSec
+		if smilp[i].EndTimeSeconds!=0 {
+			lenght=smilp[i].EndTimeSeconds-smilp[i].StartTimeSeconds
 		}
 
 
