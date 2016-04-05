@@ -42,13 +42,7 @@ func RunBackgroundScheduler() *scheduler.Job {
 }
 
 func work() {
-	vids, er := getPlaylist()
-	if er != nil {
-		log.Fatalln(er)
-	}
-	log.Println(syncPlaylist(vids))
 
-	return
 
 	err := downloadMissingYoutubeVideos()
 	if err != nil {
@@ -59,6 +53,7 @@ func work() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	log.Println(syncPlaylist(allvids))
 
 	syncPlaylist(allvids)
 
