@@ -140,7 +140,7 @@ func (*FakeliveController) GetSettings(c *iris.Context) {
 
 func (*FakeliveController) GetNewTrim(c *iris.Context) {
 	var videos []Video
-	err:=stormdb.All(&videos)
+	err:=stormdb.AllByIndex("Id",&videos)
 	if err != nil {
 		c.JSON(FakeliveSettings{})
 		return
