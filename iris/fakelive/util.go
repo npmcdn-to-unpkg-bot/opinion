@@ -112,6 +112,11 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 			log.Fatalln(err)
 		}
 
+		if currVideo.Disabled{
+			log.Println(currVideo)
+			continue
+		}
+
 
 		location, err := GetVideoLocation(currVideo.Id)
 		if err != nil {
@@ -167,6 +172,7 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 		}
 
 		if currVideo.Disabled{
+			log.Println(currVideo)
 			continue
 		}
 
