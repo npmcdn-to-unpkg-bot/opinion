@@ -147,6 +147,7 @@ func (*FakeliveController) GetNewTrim(c *iris.Context) {
 	}
 
 	max :=30
+	sort.Sort(ByID(videos))
 
 	if len(videos)<max{
 		max = len(videos)
