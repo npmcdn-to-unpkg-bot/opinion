@@ -116,6 +116,12 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 			log.Println(currVideo)
 			continue
 		}
+		duration:=currVideo.DurationSeconds
+		if currVideo.StartTime!=0 || currVideo.EndTime!=0{
+
+			duration=time.Duration(currVideo.EndTime-currVideo.StartTime)*time.Second
+
+		}
 
 
 		location, err := GetVideoLocation(currVideo.Id)
@@ -131,13 +137,13 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 			Scheduled: starttime,
 			StartTimeSeconds:currVideo.StartTime,
 			EndTimeSeconds:currVideo.EndTime,
-			EndTime:   starttime.Add(videos[i].DurationSeconds),
+			EndTime:   starttime.Add(duration),
 			Src:       location,
 			StartSec:  0,
 			Lenght:    -1,
 		})
 
-		starttime = starttime.Add(videos[i].DurationSeconds)
+		starttime = starttime.Add(duration)
 
 	}
 
@@ -171,9 +177,17 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 			log.Fatalln(err)
 		}
 
+
+
 		if currVideo.Disabled{
 			log.Println(currVideo)
 			continue
+		}
+		duration:=currVideo.DurationSeconds
+		if currVideo.StartTime!=0 || currVideo.EndTime!=0{
+
+			duration=time.Duration(currVideo.EndTime-currVideo.StartTime)*time.Second
+
 		}
 
 		if StartPlaylistTime.Add(24 * time.Hour).Before(StartTime) {
@@ -188,9 +202,13 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 		//
 		if startLatestIndex < len(startLatestVideosTimes) {
 
+
+
+
+
 			//check if at the end of the video we pass the startstream time
 
-			endVideoTime := StartTime.Add(currVideo.DurationSeconds)
+			endVideoTime := StartTime.Add(duration)
 
 			log.Println(endVideoTime, startLatestVideosTimes[startLatestIndex].getHourSeconds())
 
@@ -200,7 +218,7 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 					//TODO resolv this mess <
 					cuttime := endVideoTime.Sub(startLatestVideosTimes[startLatestIndex].getHourSeconds())
 
-					playtime := currVideo.DurationSeconds - cuttime
+					playtime := duration - cuttime
 
 					smilPlaylist = append(smilPlaylist, SmilPlaylist{
 						Title:currVideo.Title,
@@ -246,7 +264,7 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 			Scheduled: StartTime,
 			StartTimeSeconds:currVideo.StartTime,
 			EndTimeSeconds:currVideo.EndTime,
-			EndTime:   StartTime.Add(ids[i].DurationSeconds),
+			EndTime:   StartTime.Add(duration),
 			Src:       location,
 			StartSec:  0,
 			Lenght:    -1,
