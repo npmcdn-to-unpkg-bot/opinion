@@ -112,9 +112,6 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 			log.Fatalln(err)
 		}
 
-		if currVideo.Disabled{
-			continue
-		}
 
 		location, err := GetVideoLocation(currVideo.Id)
 		if err != nil {
@@ -159,7 +156,6 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 	StartPlaylistTime := StartTime
 
 	var shouldContinue = true
-
 	var startLatestIndex int
 
 	for i := range ids {
@@ -168,6 +164,10 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 		err:=stormdb.One("Id",ids[i].Id,&currVideo)
 		if err!=nil{
 			log.Fatalln(err)
+		}
+
+		if currVideo.Disabled{
+			continue
 		}
 
 		if StartPlaylistTime.Add(24 * time.Hour).Before(StartTime) {
