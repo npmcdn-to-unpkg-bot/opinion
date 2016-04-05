@@ -139,6 +139,7 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 			EndTimeSeconds:currVideo.EndTime,
 			EndTime:   starttime.Add(duration),
 			Src:       location,
+			Duration:duration.String(),
 			StartSec:  0,
 			Lenght:    -1,
 		})
@@ -224,6 +225,7 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 						Title:currVideo.Title,
 						Thumbnail:currVideo.Thumbnail,
 						VidType:   vod,
+						Duration:playtime.String(),
 						StartTimeSeconds:currVideo.StartTime,
 						EndTimeSeconds:currVideo.EndTime,
 						Scheduled: StartTime,
@@ -261,6 +263,7 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 			Title:currVideo.Title,
 			Thumbnail:currVideo.Thumbnail,
 			VidType:   vod,
+			Duration:duration.String(),
 			Scheduled: StartTime,
 			StartTimeSeconds:currVideo.StartTime,
 			EndTimeSeconds:currVideo.EndTime,
