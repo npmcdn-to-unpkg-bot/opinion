@@ -116,7 +116,7 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 			log.Println(currVideo)
 			continue
 		}
-		duration:=currVideo.DurationSeconds
+		duration:=videos[i].DurationSeconds
 		if currVideo.StartTime!=0 || currVideo.EndTime!=0{
 
 			duration=time.Duration(currVideo.EndTime-currVideo.StartTime)*time.Second
@@ -184,9 +184,8 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 			log.Println(currVideo)
 			continue
 		}
-		duration:=currVideo.DurationSeconds
+		duration:=ids[i].DurationSeconds
 		if currVideo.StartTime!=0 || currVideo.EndTime!=0{
-
 			duration=time.Duration(currVideo.EndTime-currVideo.StartTime)*time.Second
 
 		}
@@ -202,9 +201,6 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 		}
 		//
 		if startLatestIndex < len(startLatestVideosTimes) {
-
-
-
 
 
 			//check if at the end of the video we pass the startstream time
