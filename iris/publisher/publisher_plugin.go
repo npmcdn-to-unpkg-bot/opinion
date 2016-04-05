@@ -21,7 +21,7 @@ func NewPublisherPlugin(baseURL string, authenticator iris.HandlerFunc, dbb *bol
 	stormdb=&storm.DB{Bolt:db}
 	stormdb.Init(Publisher{})
 
-
+AddDefaultPub()
 
 	return &PublisherPlugin{
 		BaseUrl:             baseURL,
