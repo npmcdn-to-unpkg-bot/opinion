@@ -4,9 +4,11 @@ import (
 	"fmt"
 
 	"github.com/boltdb/bolt"
+	"github.com/asdine/storm"
 )
 
 var db *bolt.DB
+var stormdb *storm.DB
 
 var (
 	PublishersBucket = []byte("Publisher")

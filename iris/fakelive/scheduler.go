@@ -14,6 +14,10 @@ import (
 	"sort"
 	"sync"
 	"time"
+	"github.com/boltdb/bolt"
+
+
+	"strings"
 )
 
 var basedir = "/var/www/vhosts/azorestv.com/httpdocs/uploads/movies/yt"
@@ -38,6 +42,13 @@ func RunBackgroundScheduler() *scheduler.Job {
 }
 
 func work() {
+	vids, er := getPlaylist()
+	if er != nil {
+		log.Fatalln(er)
+	}
+	log.Println(syncPlaylist(vids))
+
+	return
 
 	err := downloadMissingYoutubeVideos()
 	if err != nil {
@@ -48,6 +59,8 @@ func work() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	syncPlaylist(allvids)
 
 	videos := generatePlalist(allvids)
 
@@ -70,6 +83,7 @@ func work() {
 
 	//const longForm = "2006-01-02 15:04:05"
 	//t, _ := time.Parse(longForm, calcScheduleDate())
+
 	err = SaveCurrentPlaylist(playlissmill)
 	if err != nil {
 		log.Fatalln(stacktrace.Propagate(err, ""))
@@ -95,7 +109,6 @@ func (*FakeliveController) CurrentPlaylist(c *iris.Context) {
 func (*FakeliveController) CurrentSmilPlaylist(c *iris.Context) {
 
 	c.WriteText(200, GetCurrentSmilPlaylist())
-
 }
 
 type RepeatTimes struct {
@@ -130,6 +143,81 @@ func (*FakeliveController) GetSettings(c *iris.Context) {
 	c.JSON(settings)
 }
 
+func (*FakeliveController) GetNewTrim(c *iris.Context) {
+	var videos []Video
+	err:=stormdb.All(&videos)
+	if err != nil {
+		c.JSON(FakeliveSettings{})
+		return
+	}
+
+	max :=30
+
+	if len(videos)<max{
+		max = len(videos)
+	}
+
+	c.JSON(videos[:max])
+}
+
+func (*FakeliveController) GetSearchTrim(c *iris.Context) {
+	keyword:=c.Param("keyword")
+
+	var videos []Video
+
+	max :=30
+
+	stormdb.Bolt.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte("Video"))
+		c := bucket.Cursor()
+
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			if strings.Contains(strings.ToLower(string(v)),strings.ToLower(keyword)){
+				var video Video
+
+				err:=stormdb.Get("Video",k,&video)
+				if err!=nil{
+					log.Println(err)
+					continue
+				}
+				videos=append(videos,video)
+			}
+
+		}
+
+		return nil
+	})
+
+	if len(videos)< max{
+		max=len(videos)
+	}
+
+	c.JSON(videos[:max])
+
+
+
+}
+
+
+func (*FakeliveController) PostSaveVideoTrim(c *iris.Context) {
+	var video Video
+
+	err:=c.ReadJSON(&video)
+	if err != nil {
+		c.JSON(FakeliveSettings{})
+		return
+	}
+
+	err=stormdb.Save(video)
+	if err != nil {
+		c.JSON(FakeliveSettings{})
+		return
+	}
+}
+
+
+
+
 func (*FakeliveController) SetSettings(c *iris.Context) {
 	var lss FakeliveSettings
 
@@ -159,5 +247,4 @@ func (*FakeliveController) ReloadNow(c *iris.Context) {
 		return
 	}
 	cmd.Wait()
-
 }

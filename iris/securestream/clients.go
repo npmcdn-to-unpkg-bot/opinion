@@ -1,170 +1,93 @@
 package securestream
 
 import (
-	"encoding/json"
-	"github.com/boltdb/bolt"
 	"github.com/kataras/iris"
-	"github.com/palantir/stacktrace"
 	"gopkg.in/mgo.v2/bson"
-	"log"
+
 	"time"
 )
+
+type Client struct {
+	Id      string `storm:"id"`
+	Name    string
+	Email   string
+	Created time.Time
+}
 
 type ClientController struct{}
 
 func (cc *ClientController) Create(c *iris.Context) {
-	var client = &Client{}
-	err := c.ReadJSON(client)
+	var client Client
+	err := c.ReadJSON(&client)
 	if err != nil {
-		c.Write(err.Error())
+		c.RenderJSON(500,err.Error())
 		return
 	}
 
-	err = client.Save()
+	client.Id=bson.NewObjectId().Hex()
+
+	err=stormdb.Save(client)
 	if err != nil {
-		c.Write(err.Error())
+		c.RenderJSON(500,err.Error())
 		return
 	}
+
+
 }
 
 func (cc *ClientController) Read(c *iris.Context) {
 	id := c.Param("id")
-	var client = &Client{}
+	var client Client
 
-	c.JSON(client.Get(id))
+	err:=stormdb.One("Id",id,&client)
+	if err != nil {
+		c.RenderJSON(500,err.Error())
+		return
+	}
+
+
+
+	c.JSON(client)
 }
 
 func (cc *ClientController) ReadAll(c *iris.Context) {
-	var client = &Client{}
+	var clients  []Client
 
-	clients, err := client.GetAll()
+	err:=stormdb.All(&clients)
 	if err != nil {
-		c.Write(err.Error())
+		c.RenderJSON(500,err.Error())
 		return
 	}
+
 	c.JSON(clients)
 }
 
 func (cc *ClientController) Update(c *iris.Context) {
-	var client = &Client{}
-	err := c.ReadJSON(client)
+	var client Client
+	err := c.ReadJSON(&client)
 	if err != nil {
-		c.Write(err.Error())
+		c.RenderJSON(500,err.Error())
 		return
 	}
 
-	err = client.Update()
+	err=stormdb.Save(client)
 	if err != nil {
-		c.Write(err.Error())
+		c.RenderJSON(500,err.Error())
 		return
 	}
 }
 
 func (cc *ClientController) Delete(c *iris.Context) {
 	id := c.Param("id")
-	var client = &Client{}
 
-	err := client.Delete(id)
+	client := &Client{Id:id}
+
+	err:=stormdb.Remove(client)
 	if err != nil {
-		c.Write(err.Error())
+		c.RenderJSON(500,err.Error())
 		return
 	}
 }
 
-type Client struct {
-	Id      string
-	Name    string
-	Email   string
-	Created time.Time
-}
 
-func (c *Client) Save() error {
-	c.Id = bson.NewObjectId().Hex()
-	return db.Update(func(tx *bolt.Tx) error {
-		// Retrieve the users bucket.
-		// This should be created when the DB is first opened.
-		b := tx.Bucket(ClientsBucket)
-		// Persist bytes to users bucket.
-		out, err := json.Marshal(c)
-		if err != nil {
-			return err
-		}
-		return b.Put([]byte(c.Id), out)
-	})
-}
 
-func (c *Client) Update() error {
-	return db.Update(func(tx *bolt.Tx) error {
-		// Retrieve the users bucket.
-		// This should be created when the DB is first opened.
-		b := tx.Bucket(ClientsBucket)
-		// Persist bytes to users bucket.
-		out, err := json.Marshal(c)
-		if err != nil {
-			return err
-		}
-		return b.Put([]byte(c.Id), out)
-	})
-}
-
-func (c *Client) Delete(id string) error {
-	return db.Update(func(tx *bolt.Tx) error {
-		// Retrieve the users bucket.
-		// This should be created when the DB is first opened.
-		b := tx.Bucket(ClientsBucket)
-		// Persist bytes to users bucket.
-		return b.Delete([]byte(id))
-	})
-}
-
-func (c *Client) Get(id string) *Client {
-	err := db.View(func(tx *bolt.Tx) error {
-		// Assume bucket exists and has keys
-		b := tx.Bucket(ClientsBucket)
-
-		out := b.Get([]byte(id))
-		if out == nil {
-			return nil
-		}
-
-		if out != nil {
-			err := json.Unmarshal(out, c)
-			if err != nil {
-				return stacktrace.Propagate(err, "")
-			}
-		}
-
-		return nil
-	})
-	if err != nil {
-		log.Println(stacktrace.Propagate(err, ""))
-		return nil
-	}
-
-	return c
-}
-
-func (c *Client) GetAll() ([]Client, error) {
-	var clients []Client
-	err := db.View(func(tx *bolt.Tx) error {
-		// Assume bucket exists and has keys
-		b := tx.Bucket(ClientsBucket)
-		c := b.Cursor()
-
-		for k, v := c.First(); k != nil; k, v = c.Next() {
-			var client Client
-			err := json.Unmarshal(v, &client)
-			if err != nil {
-				return err
-			}
-			clients = append(clients, client)
-		}
-
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return clients, nil
-}

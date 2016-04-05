@@ -1,26 +1,28 @@
 package publisher
 
 import (
-	"encoding/json"
-	"log"
+
+
 	"time"
 
-	"github.com/boltdb/bolt"
+
 	"github.com/kataras/iris"
-	"github.com/syndtr/goleveldb/leveldb/errors"
+
 	"gopkg.in/mgo.v2/bson"
+	"log"
 )
 
 type Publisher struct {
-	Id       string
-	Email    string
+	Id       string `storm:"id"`
+	Email    string  `storm:"unique"`
 	Password string
 	Salt     string
 
 	Name  string
-	Image *Base64Img
+	Image *Base64Img `storm:"inline"`
 	Admin bool
 	Date  time.Time
+	Updated time.Time
 }
 
 type Base64Img struct {
@@ -30,13 +32,7 @@ type Base64Img struct {
 	Base64   string
 }
 
-func (pub *Publisher) Delete(id string) error {
 
-	return db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(PublishersBucket)
-		return b.Delete([]byte(id))
-	})
-}
 
 func (pub *Publisher) ID() string {
 
@@ -48,106 +44,17 @@ func (pub *Publisher) PASSWORD() string {
 	return pub.Password
 }
 
-func (pub *Publisher) Get(id string) *Publisher {
-
-	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(PublishersBucket)
-		bp := b.Get([]byte(id))
-
-		err := json.Unmarshal(bp, pub)
-		if err != nil {
-			return err
-		}
-		pub.Id = id
-
-		return err
-	})
-	if err != nil {
-		return nil
-	}
-
-	return pub
-}
-
-func (pub *Publisher) Update(p *Publisher) error {
-
-	return db.Update(func(tx *bolt.Tx) error {
-
-		buf, err := json.Marshal(p)
-		if err != nil {
-
-			return err
-		}
-
-		b := tx.Bucket(PublishersBucket)
-
-		return b.Put([]byte(p.Id), buf)
-	})
-
-}
-
-func (pub *Publisher) GetUser(email string) *Publisher {
-
-	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(PublishersBucket)
-		c := b.Cursor()
-
-		for k, v := c.First(); k != nil; k, v = c.Next() {
-
-			var p Publisher
-			err := json.Unmarshal(v, &p)
-			if err != nil {
-				return err
-			}
-			if p.Email == email {
-				*pub = p
-			}
-
-		}
-
-		return nil
-	})
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-
-	return pub
-
-}
 
 func (pub *Publisher) FindUser(email string) (User, error) {
 
-	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(PublishersBucket)
-		c := b.Cursor()
 
-		for k, v := c.First(); k != nil; k, v = c.Next() {
-
-			var p Publisher
-			err := json.Unmarshal(v, &p)
-			if err != nil {
-				return err
-			}
-			p.Id = string(k)
-			if p.Email == email {
-				*pub = p
-			}
-
-		}
-
-		return nil
-	})
-	if err != nil {
-		log.Println(err)
-		return nil, errors.New("Error")
+	err:=stormdb.One("Email",email,pub)
+	if err!=nil{
+		return nil,err
 	}
 
-	if pub.Id == "" {
-		return nil, errors.New("not found")
-	}
 
-	return pub, nil
+	return pub,nil
 
 }
 
@@ -162,123 +69,100 @@ func (PublisherController) Create(c *iris.Context) {
 		return
 	}
 
+	p.Id=bson.NewObjectId().Hex()
+
 	p.Password = NewSha512Password(p.Password)
 
-	//todo validate existing email
-
-	err = db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(PublishersBucket)
-
-		// email is going to be the Id of the user
-
-		buf, err := json.Marshal(p)
-		if err != nil {
-			return err
-		}
-
-		err = b.Put([]byte(bson.NewObjectId().Hex()), buf)
-		return err
-	})
-
+	err=stormdb.Save(p)
 	if err != nil {
-		c.Write(err.Error())
+		c.RenderJSON(500,err.Error())
+		return
 	}
 }
 
 func (PublisherController) Edit(c *iris.Context) {
 
 	id := c.Param("id")
-	var p = &Publisher{}
-	err := c.ReadJSON(p)
+	var p Publisher
+	err := c.ReadJSON(&p)
 	if err != nil {
-		c.Write(err.Error())
+		if err != nil {
+			c.RenderJSON(500,err.Error())
+			return
+		}
+	}
+
+	var old Publisher
+
+	err=stormdb.One("Id",id,&old)
+	if err != nil {
+		c.RenderJSON(500,err.Error())
 		return
 	}
 
-	old := &Publisher{}
-	log.Println(id)
-	old.Get(id)
 
-	log.Println(old)
-
-	if p.Image == nil {
-		p.Image = old.Image
-	}
-
+	p.Updated = time.Now()
 	if p.Password != old.Password {
 		p.Password = NewSha512Password(p.Password)
 	}
 
-	p.Id = id
 
-	err = old.Update(p)
+	err=stormdb.Save(p)
 	if err != nil {
-		log.Println("---------->", err)
-		c.Write(err.Error())
+		c.RenderJSON(500,err)
+		return
 	}
+
 
 }
 
 func (PublisherController) GetId(c *iris.Context) {
 
 	id := c.Param("id")
-	var p = &Publisher{}
+	var pub Publisher
 
-	p.Get(id)
+	err:=stormdb.One("Id",id,&pub)
+	if err != nil {
+		c.RenderJSON(500,err.Error())
+		return
+	}
 
-	c.JSON(p)
-
+	c.JSON(pub)
 }
 
 func (PublisherController) GetImage(c *iris.Context) {
 
 	id := c.Param("id")
-	var p = &Publisher{}
 
-	p.Get(id)
+	var pub Publisher
+	err:=stormdb.One("Id",id,&pub)
+	if err != nil {
+		c.RenderJSON(500,err.Error())
+		return
+	}
 
-	c.JSON(p.Image.Base64)
+	c.JSON(pub.Image.Base64)
 
 }
 
 func (PublisherController) Delete(c *iris.Context) {
 
 	id := c.Param("id")
+	p:=Publisher{Id:id}
 
-	err := db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(PublishersBucket)
-		err := b.Delete([]byte(id))
-		return err
-	})
+	err:=stormdb.Remove(p)
 	if err != nil {
-		c.Write(err.Error())
+		c.RenderJSON(500,err)
+		return
 	}
 }
 
 func (PublisherController) ListAll(c *iris.Context) {
-
 	var publishers []Publisher
-	err := db.View(func(tx *bolt.Tx) error {
-		// Assume bucket exists and has keys
-		b := tx.Bucket(PublishersBucket)
-		c := b.Cursor()
 
-		for k, v := c.First(); k != nil; k, v = c.Next() {
-
-			var p Publisher
-			err := json.Unmarshal(v, &p)
-			if err != nil {
-				return err
-			}
-			p.Id = string(k)
-
-			publishers = append(publishers, p)
-		}
-
-		return nil
-	})
+	err:=stormdb.All(&publishers)
 	if err != nil {
-		c.Write(err.Error())
+		c.RenderJSON(500,err)
 		return
 	}
 
@@ -287,6 +171,7 @@ func (PublisherController) ListAll(c *iris.Context) {
 
 func AddDefaultPub() error {
 	var p = &Publisher{}
+	p.Id=bson.NewObjectId().Hex()
 	p.Name = "Marcelo Pires"
 	p.Password = "Kirk1zodiak"
 	p.Email = "thesyncim@gmail.com"
@@ -296,19 +181,8 @@ func AddDefaultPub() error {
 
 	//todo validate existing email
 
-	return db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(PublishersBucket)
-
-		// email is going to be the Id of the user
-
-		buf, err := json.Marshal(p)
-		if err != nil {
-			return err
-		}
-
-		err = b.Put([]byte(bson.NewObjectId().Hex()), buf)
-		return err
-	})
+	log.Println(stormdb.Save(p))
+	return nil
 
 }
 

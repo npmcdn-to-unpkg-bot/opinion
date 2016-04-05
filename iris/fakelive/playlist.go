@@ -25,10 +25,10 @@ type playlist struct {
 }
 
 type Video struct {
-	Id int `xml:"id,attr"`
+	Id int `xml:"id,attr" storm:"id"`
 	StartTime int
-	EndEndTime int
-	Excluded bool
+	EndTime int
+	Disabled bool
 	Id_user         int           `xml:"id_user,attr"`
 	Title           string        `xml:"title,attr"`
 	Thumbnail       string        `xml:"thumbnail,attr"`

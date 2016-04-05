@@ -39,12 +39,12 @@ angular.module('myApp.Articles', ['ngRoute'])
                 method: 'GET',
                 url: window.hostname + 'article/listall'
             }).then(function successCallback(response) {
-                console.log(response)
+
                 $scope.articles = response.data;
                 // this callback will be called asynchronously
                 // when the response is available
             }, function errorCallback(response) {
-                console.log(response)
+                toastr.error('Failed!', response.data);
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
             });
@@ -64,6 +64,7 @@ angular.module('myApp.Articles', ['ngRoute'])
                 // this callback will be called asynchronously
                 // when the response is available
             }, function errorCallback(response) {
+                toastr.error('Failed!', response.data);
                 console.log(response)
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
@@ -106,6 +107,7 @@ angular.module('myApp.Articles', ['ngRoute'])
             // this callback will be called asynchronously
             // when the response is available
         }, function errorCallback(response) {
+            toastr.error('Failed!', response.data);
             console.log(response);
             // called asynchronously if an error occurs
             // or server returns response with an error status.
@@ -128,6 +130,7 @@ angular.module('myApp.Articles', ['ngRoute'])
                 // this callback will be called asynchronously
                 // when the response is available
             }, function errorCallback(response) {
+                toastr.error('Failed!', response.data);
                 console.log(response);
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
@@ -152,6 +155,7 @@ angular.module('myApp.Articles', ['ngRoute'])
             // this callback will be called asynchronously
             // when the response is available
         }, function errorCallback(response) {
+            toastr.error('Failed!', response.data);
             console.log(response);
             // called asynchronously if an error occurs
             // or server returns response with an error status.
@@ -169,6 +173,7 @@ angular.module('myApp.Articles', ['ngRoute'])
                 // this callback will be called asynchronously
                 // when the response is available
             }, function errorCallback(response) {
+                toastr.error('Failed!', response.data);
                 console.log(response);
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
@@ -191,12 +196,13 @@ angular.module('myApp.Articles', ['ngRoute'])
             // this callback will be called asynchronously
             // when the response is available
         }, function errorCallback(response) {
+            toastr.error('Failed!', response.data);
             console.log(response)
             // called asynchronously if an error occurs
             // or server returns response with an error status.
         });
     };
-
+ 
     update();
 
     $scope.trust = function (str) {

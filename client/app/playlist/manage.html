@@ -1,48 +1,40 @@
-<table class="table">
+<div class="form-group">
+    <label for="inputTitle">Search</label>
+    <input type="text" class="form-control" id="inputTitle" placeholder="Title" ng-change="search(searchKeyword)" ng-model="searchKeyword">
+</div>
 
+
+<table class="table">
     <thead>
     <tr>
         <th>Imagem</th>
         <th>Titulo</th>
-        <th>Duração</th>
-        <th>No Ar às:</th>
+        <th>inicio</th>
+        <th>fim</th>
+        <th>disabled</th>
+        <th>update</th>
+
+
     </tr>
     </thead>
     <tbody>
+
     <tr ng-repeat="video in videos" ng-class='{red : video.Playing}' scroll-if="{{video.Playing}}">
-        <td><img style="height: 50px"
-                 data-ng-src="{{::video.Thumbnail}}"></td>
+        <td><img style="height: 50px" data-ng-src="{{::video.Thumbnail}}"></td>
         <td>{{::video.Title}}</td>
-        <td>{{::format(video.Duration)}}</td>
-        <td>{{::video.PlayingInterval}}</td>
+        <td><div class="form-group">
+            <input type="number" class="form-control"  placeholder="Inicio" ng-model="video.StartTime">
+        </div></td>
+        <td><div class="form-group">
+            <input type="number" class="form-control"  placeholder="Fim" ng-model="video.EndTime">
+        </div></td>
+        <td><input type="checkbox" ng-model="video.Disabled"/></td>
+        <td> <button type="submit" ng-click="updateVideo(video)" class="btn btn-default">Update</button></td>
+
 
     </tr>
     </tbody>
 </table>
-
-
-<!--<table class="table">
-    <ng-timepicker ng-model="Date"></ng-timepicker>
-    <thead>
-    <tr>
-        <th></th>
-        <th></th>
-
-
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-repeat="video in videos" >
-
-        <td>{{::video.Title}}</td>
-
-        <td>{{::video.PlayingInterval}}</td>
-
-    </tr>
-    </tbody>
-</table>-->
-
-
 
 <style type="text/css">
     .red {
@@ -55,6 +47,4 @@
         vertical-align: top;
         border-top: 1px solid #ddd;
     }
-
-
 </style>

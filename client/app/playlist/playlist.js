@@ -208,10 +208,11 @@ angular.module('myApp.Playlist', ['ngRoute'])
     };
 
 
-}]).controller('Manage', ['$scope', '$http', function ($scope, $http) {
+}]).controller('Manage', ['$scope', '$http','toastr', function ($scope, $http,toastr) {
 
 
     $scope.videos = [];
+
 
 
 
@@ -221,22 +222,10 @@ angular.module('myApp.Playlist', ['ngRoute'])
 
         $http({
             method: 'GET',
-            url: window.hostname + 'fakelive/getplaylist'
+            url: window.hostname + 'fakelive/trim/new'
         }).then(function successCallback(response) {
 
-            $scope.videos = [];
-
-
-            angular.forEach(response.data, function (value, key) {
-
-
-                value.PlayingInterval = datetoHHMMSS(new Date(value.Scheduled)) + ' - ' + datetoHHMMSS(new Date(value.EndTime));
-                value.Duration = (new Date(value.EndTime).getTime() - new Date(value.Scheduled).getTime()) / 1000
-                value.Playing = dateCheck(new Date(value.Scheduled), new Date(value.EndTime), new Date());
-                this.push(value);
-
-
-            }, $scope.videos);
+            $scope.videos = response.data;
 
             // this callback will be called asynchronously
             // when the response is available
@@ -248,24 +237,51 @@ angular.module('myApp.Playlist', ['ngRoute'])
     };
     update();
 
+    $scope.updateVideo=function(video){
+        $http({
+            method: 'POST',
+            url: window.hostname + 'fakelive/trim/save',
+            data:video
+        }).then(function successCallback(response) {
 
+            toastr.success('Success!', 'Video actualizado');
 
+            // this callback will be called asynchronously
+            // when the response is available
+        }, function errorCallback(response) {
+            toastr.error('Success!', response.data);
+            console.log(response);
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+        });
 
+    };
 
-    function dateCheck(from, to, check) {
-        if ((check.getTime() <= to.getTime() && check.getTime() >= from.getTime())) {
-            return true;
+    $scope.search=function (keywords){
+        if (keywords==""){
+            update()
+            return
+
         }
-        return false;
+        $http({
+            method: 'GET',
+            url: window.hostname + 'fakelive/trim/search/'+keywords
+        }).then(function successCallback(response) {
+
+            $scope.videos = response.data;
+
+            // this callback will be called asynchronously
+            // when the response is available
+        }, function errorCallback(response) {
+            console.log(response);
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+        });
+
+
     }
 
 
-    function datetoHHMMSS(date) {
-        return (date.getHours() < 10 ? "0" + date.getHours() : date.getHours()) +
-            ":" + (date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()) +
-            ":" + (date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds());
-    }
 
 
-
-}])
+}]);

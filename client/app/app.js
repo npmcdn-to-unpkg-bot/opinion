@@ -33,8 +33,8 @@ window.isloggedin = function() {
     return false;
 };
 
-window.hostname = 'http://opinion.azorestv.com/api/';
-/*window.hostname = 'http://localhost:9999/';*/
+/*window.hostname = 'http://opinion.azorestv.com/api/';*/
+window.hostname = 'http://localhost:9999/';
 window.hostnametpl = '';
 angular.module('myApp', ['ngRoute', 'myApp.Articles', 'myApp.Publishers','myApp.Clients',
     'myApp.Playlist', 'myApp.Auth', 'wysiwyg.module', 'angularMoment',

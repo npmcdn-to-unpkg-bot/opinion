@@ -9,12 +9,12 @@ import (
 	"net/http"
 	"time"
 
-	"encoding/json"
+
 	"log"
 
-	"github.com/boltdb/bolt"
 
 	"github.com/kataras/iris"
+	"github.com/asdine/storm"
 )
 
 const (
@@ -43,7 +43,7 @@ type (
 	}
 
 	Session struct {
-		Token   string    `bson:"Token"`
+		Token   string    `bson:"Token" storm:"id"`
 		UserID  string    `bson:"UserID"`
 		Expires time.Time `bson:"Expires"`
 	}
@@ -106,7 +106,7 @@ func ReadSession(ctx *iris.Context) (Session, error) {
 	return s, nil
 }
 
-func AngularAuth(db *bolt.DB) iris.HandlerFunc {
+func AngularAuth(db *storm.DB) iris.HandlerFunc {
 	return func(c *iris.Context) {
 		err := Auther(c, db)
 		if err != nil {
@@ -116,7 +116,7 @@ func AngularAuth(db *bolt.DB) iris.HandlerFunc {
 	}
 }
 
-func Auther(c *iris.Context, db *bolt.DB) error {
+func Auther(c *iris.Context, db *storm.DB) error {
 	token := c.Request.Header.Get(TokenHeaderField)
 	if token == "" {
 		cookie, err := c.Request.Cookie(XSRFCookieName)
@@ -130,15 +130,10 @@ func Auther(c *iris.Context, db *bolt.DB) error {
 	}
 
 	var sess Session
-	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(SessionsBucket)
-		buf := b.Get([]byte(token))
 
-		return json.Unmarshal(buf, &sess)
-	})
+	err:=db.One("Token",token,&sess)
 	if err != nil {
-		log.Println(err)
-		return nil
+		return err
 	}
 
 	if &sess == nil {
@@ -155,7 +150,7 @@ func Auther(c *iris.Context, db *bolt.DB) error {
 	return nil
 }
 
-func AngularSignIn(coll *bolt.DB, findUser FindUser, cPass ConvertPassword, expireTime time.Duration) iris.HandlerFunc {
+func AngularSignIn(coll *storm.DB, findUser FindUser, cPass ConvertPassword, expireTime time.Duration) iris.HandlerFunc {
 	return func(c *iris.Context) {
 		err := Signer(c, coll, findUser, cPass, expireTime)
 		if err != nil {
@@ -164,7 +159,7 @@ func AngularSignIn(coll *bolt.DB, findUser FindUser, cPass ConvertPassword, expi
 	}
 }
 
-func Signer(c *iris.Context, db *bolt.DB, findUser FindUser, convertPassword ConvertPassword, expireTime time.Duration) error {
+func Signer(c *iris.Context, db *storm.DB, findUser FindUser, convertPassword ConvertPassword, expireTime time.Duration) error {
 
 	type auth struct {
 		Email    string
@@ -205,19 +200,11 @@ func Signer(c *iris.Context, db *bolt.DB, findUser FindUser, convertPassword Con
 		Expires: expire,
 	}
 
-	buf, err := json.Marshal(session)
-	if err != nil {
-		return err
-	}
 
-	err = db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(SessionsBucket)
-		err := b.Put([]byte(sessionToken), buf)
-		return err
-	})
+	err=db.Save(session)
+
 	if err != nil {
-		c.EmitError(500)
-		c.Write(err.Error())
+		c.RenderJSON(500,err.Error())
 		return err
 	}
 

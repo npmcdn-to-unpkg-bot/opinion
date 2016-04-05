@@ -73,6 +73,7 @@ angular.module('myApp.Publishers', ['ngRoute'])
                 // this callback will be called asynchronously
                 // when the response is available
             }, function errorCallback(response) {
+                toastr.error('Failed!', response.data);
                 console.log(response)
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
@@ -94,6 +95,7 @@ angular.module('myApp.Publishers', ['ngRoute'])
             // this callback will be called asynchronously
             // when the response is available
         }, function errorCallback(response) {
+            toastr.error('Failed!', response.data);
             console.log(response)
             // called asynchronously if an error occurs
             // or server returns response with an error status.
@@ -106,12 +108,13 @@ angular.module('myApp.Publishers', ['ngRoute'])
                 url: window.hostname + 'publisher/edit/' + id,
                 data: $scope.publisher
             }).then(function successCallback(response) {
-                console.log(response)
+              
                 toastr.success('Success!', 'Publisher Edited');
                 // this callback will be called asynchronously
                 // when the response is available
             }, function errorCallback(response) {
-                console.log(response)
+                toastr.error('Failed!', response.data);
+
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
             });

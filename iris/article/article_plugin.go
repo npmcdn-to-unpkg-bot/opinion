@@ -5,6 +5,8 @@ import (
 	"github.com/boltdb/bolt"
 	"github.com/kataras/iris"
 	"log"
+	"github.com/asdine/storm"
+
 )
 
 type ArticlesPlugin struct {
@@ -16,6 +18,8 @@ type ArticlesPlugin struct {
 
 func NewArticlesPlugin(baseURL string, authenticator iris.HandlerFunc, dbb *bolt.DB) *ArticlesPlugin {
 	db = dbb
+	stormdb=&storm.DB{Bolt:db}
+	stormdb.Init(Article{})
 	err := createBoltBuckets()
 	if err != nil {
 		log.Fatalln(err)

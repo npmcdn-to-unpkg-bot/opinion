@@ -8,11 +8,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/palantir/stacktrace"
+	"github.com/asdine/storm"
 )
 
 var (
 	sqldb               *gorm.DB
 	db                  *bolt.DB
+	stormdb *storm.DB
 	PlaylistBucket      = []byte("Playlist")
 	PlaylistKey         = []byte("playlist")
 	PlaylistSmilKey     = []byte("playlistSmil")

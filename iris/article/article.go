@@ -2,33 +2,35 @@ package article
 
 import (
 	"encoding/base64"
-	"encoding/json"
+
 	"github.com/disintegration/imaging"
 	"log"
 
 	"time"
 
 	"bytes"
-	"github.com/boltdb/bolt"
+
 
 	"github.com/kataras/iris"
 	"github.com/thesyncim/opinion/iris/publisher"
 	"image"
 	"image/jpeg"
 	"labix.org/v2/mgo/bson"
-	"net/http"
+
 	"strings"
+
+
 )
 
 type Article struct {
-	Id            string
-	Title         string
+	Id            string `storm:"id"`
+	Title         string  `storm:"unique"`
 	Description   string
 	Text          string
 	Date          time.Time
 	Updated       time.Time
-	Approved      bool
-	Image         *Base64Img
+	Approved      bool   `storm:"index"`
+	Image         *Base64Img  `storm:"inline"`
 	Publisherid   string
 	PublisherName string
 }
@@ -39,58 +41,12 @@ type Base64Img struct {
 	Base64   string
 }
 
-func (art *Article) Delete(id string) error {
-
-	return db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(ArticlesBucket)
-		return b.Delete([]byte(id))
-	})
-}
-
-func (art *Article) Publisher(id string) *publisher.Publisher {
-	p := &publisher.Publisher{}
-	return p.Get(id)
-}
-
-func (art *Article) Get(id string) *Article {
-
-	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(ArticlesBucket)
-		bp := b.Get([]byte(id))
-
-		err := json.Unmarshal(bp, art)
-		if err != nil {
-			return err
-		}
-
-		return err
-	})
-	if err != nil {
-		return nil
-	}
-
-	return art
-}
-
-func (art *Article) Update(a *Article) error {
-
-	return db.Update(func(tx *bolt.Tx) error {
-
-		buf, err := json.Marshal(a)
-		if err != nil {
-
-			return err
-		}
-		b := tx.Bucket(ArticlesBucket)
-		return b.Put([]byte(a.Id), buf)
-	})
-
-}
-
 type ArticlesController struct {
 }
 
 func resizeImage(str *string) (*string, error) {
+
+
 
 	//decode from base64
 	read := base64.NewDecoder(base64.StdEncoding, strings.NewReader(*str))
@@ -116,7 +72,8 @@ func resizeImage(str *string) (*string, error) {
 }
 
 func (ArticlesController) Create(c *iris.Context) {
-	var a = Article{}
+	var a  Article
+	a.Id= bson.NewObjectId().Hex()
 	err := c.ReadJSON(&a)
 	if err != nil {
 		c.Write(err.Error())
@@ -129,19 +86,60 @@ func (ArticlesController) Create(c *iris.Context) {
 		a.Publisherid = val.(publisher.Session).UserID
 	}
 
-	p := a.Publisher(a.Publisherid)
+	var pub publisher.Publisher
 
-	log.Println(&a == nil, p == nil)
-	a.PublisherName = p.Name
+	err=stormdb.One("Id",a.Publisherid,&pub)
+	if err != nil {
+		log.Println(err)
+		c.RenderJSON(500,err.Error())
+		return
+	}
+
+
+	a.PublisherName = pub.Name
 
 	a.Date = time.Now()
 	a.Updated = time.Now()
 
 	if a.Image != nil {
-
 		tmp, err := resizeImage(&a.Image.Base64)
 		if err != nil {
+			log.Println(err)
 			c.Write(err.Error())
+			return
+		}
+		a.Image.Base64 = *tmp
+	}
+
+	err= stormdb.Save(a)
+
+	if err != nil {
+		c.RenderJSON(500,err.Error())
+		return
+	}
+}
+
+func (ArticlesController) Edit(c *iris.Context) {
+	log.Println("edit")
+
+	var a Article
+	err := c.ReadJSON(&a)
+	if err != nil {
+		log.Println(err)
+		c.RenderJSON(500,err.Error())
+		return
+	}
+	var old Article
+
+	err=stormdb.One("Id",a.Id,&old)
+
+	if a.Image==nil{
+		a.Image=old.Image
+	}else{
+		tmp, err := resizeImage(&a.Image.Base64)
+		if err != nil {
+			log.Println(err)
+			c.RenderJSON(500,err.Error())
 			return
 		}
 
@@ -149,53 +147,21 @@ func (ArticlesController) Create(c *iris.Context) {
 
 	}
 
-	buf, err := json.Marshal(a)
-	if err != nil {
-		c.Write(err.Error())
-		return
-	}
-
-	err = db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(ArticlesBucket)
-		err := b.Put([]byte(bson.NewObjectId().Hex()), buf)
-		return err
-	})
-	if err != nil {
-		c.Write(err.Error())
-	}
-}
-
-func (ArticlesController) Edit(c *iris.Context) {
-
-	id := c.Param("id")
-	var a Article
-	err := c.ReadJSON(&a)
-	if err != nil {
-		c.Write(err.Error())
-		return
-	}
 
 	a.Updated = time.Now()
-	buf, err := json.Marshal(a)
-	if err != nil {
-		c.Write(err.Error())
-		return
-	}
-	tmp, err := resizeImage(&a.Image.Base64)
-	if err != nil {
-		c.Write(err.Error())
-		return
-	}
 
-	a.Image.Base64 = *tmp
 
-	err = db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(ArticlesBucket)
-		err := b.Put([]byte(id), buf)
-		return err
-	})
+
+
+
+
+
+log.Println("ai")
+	err=stormdb.Save(a)
 	if err != nil {
-		c.Write(err.Error())
+		log.Println(err)
+		c.RenderJSON(500,err.Error())
+		return
 	}
 
 }
@@ -204,13 +170,12 @@ func (ArticlesController) Delete(c *iris.Context) {
 
 	id := c.Param("id")
 
-	err := db.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(ArticlesBucket)
-		err := b.Delete([]byte(id))
-		return err
-	})
+	a:=Article{Id:id}
+
+	err:=stormdb.Remove(a)
 	if err != nil {
-		c.Write(err.Error())
+		c.RenderJSON(500,err)
+		return
 	}
 }
 
@@ -220,22 +185,13 @@ func (ArticlesController) GetId(c *iris.Context) {
 
 	var a Article
 
-	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(ArticlesBucket)
-		bp := b.Get([]byte(id))
-
-		err := json.Unmarshal(bp, &a)
-		if err != nil {
-			return err
-		}
-
-		a.Id = id
-
-		return err
-	})
+	err:=stormdb.One("Id", id, &a)
 	if err != nil {
-		c.Write(err.Error())
+		c.RenderJSON(500,err)
+		return
 	}
+
+
 	c.JSON(a)
 
 }
@@ -244,31 +200,43 @@ func (ArticlesController) GetPublisher(c *iris.Context) {
 
 	id := c.Param("id")
 
-	var a = &Article{}
+	var a = &Article{Id:id}
 
-	p := a.Publisher(id)
-
-	if p == nil {
-		c.RenderJSON(http.StatusInternalServerError, "invalid publisher")
-
+	err:=stormdb.One("Id", id, &a)
+	if err!=nil{
+		c.RenderJSON(500,err)
+		return
+	}
+	var p publisher.Publisher
+	err=stormdb.One("Id",id,&p)
+	if err!=nil{
+		c.RenderJSON(500,err)
 		return
 	}
 
 	c.JSON(p)
 
 }
-func prepareArticlesforUser(userID string, articles []Article) []Article {
+func prepareArticlesforUser(userID string, articles []Article) ([]Article,error) {
+	log.Println("enter")
+	var pub publisher.Publisher
 
-	var p = &publisher.Publisher{}
-
-	pub := p.Get(userID)
-	if p == nil {
-		return nil
+	err:=stormdb.One("Id",userID,&pub)
+	if err!=nil{
+		log.Println("eerror")
+		return nil,err
 	}
+
+	log.Println("ai")
+
+	log.Println(pub)
+
+
+
 
 	//if is Admin show all
 	if pub.Admin {
-		return articles
+		return articles,nil
 	}
 
 	var filtered []Article
@@ -279,7 +247,7 @@ func prepareArticlesforUser(userID string, articles []Article) []Article {
 
 	}
 
-	return filtered
+	return filtered,nil
 
 }
 
@@ -290,74 +258,42 @@ func (ArticlesController) ListAll(c *iris.Context) {
 		userid = val.(publisher.Session).UserID
 
 	}
+	log.Println("fodasse")
 
-	err := db.View(func(tx *bolt.Tx) error {
-		// Assume bucket exists and has keys
-		b := tx.Bucket(ArticlesBucket)
-
-		c := b.Cursor()
-
-		for k, v := c.First(); k != nil; k, v = c.Next() {
-
-			var a Article
-			err := json.Unmarshal(v, &a)
-			if err != nil {
-				return err
-			}
-			a.Id = string(k)
-
-			log.Println(a)
-			articles = append(articles, a)
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		c.Write(err.Error())
+	err:=stormdb.All(&articles)
+	if err!=nil{
+		log.Println("fodasse all")
+		c.RenderJSON(400,err)
+		log.Println(err)
 		return
 	}
 
-	if articles == nil || userid == "" {
-		c.JSON(nil)
+	log.Println("ai o caralho",articles)
+	result,err:=prepareArticlesforUser(userid, articles)
+	log.Println("adeus")
+	if err!=nil{
+		log.Println("fodasse prepare")
+		c.RenderJSON(400,err)
+		log.Println(err)
 		return
 	}
 
-	c.JSON(prepareArticlesforUser(userid, articles))
+	log.Println("what??")
+
+
+	c.JSON(result)
 }
 
 func (ArticlesController) ListFrontend(c *iris.Context) {
 	var articles []Article
 
-	err := db.View(func(tx *bolt.Tx) error {
-		// Assume bucket exists and has keys
-		b := tx.Bucket(ArticlesBucket)
-
-		c := b.Cursor()
-
-		for k, v := c.First(); k != nil; k, v = c.Next() {
-
-			var a Article
-			err := json.Unmarshal(v, &a)
-			if err != nil {
-				return err
-			}
-			if !a.Approved {
-				continue
-			}
-			a.Id = string(k)
-
-			log.Println(a)
-			articles = append(articles, a)
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		c.Write(err.Error())
+	err:=stormdb.Find("Aproved",true,&articles)
+	if err!=nil{
+		c.RenderJSON(500,err)
 		return
 	}
+
+
 
 	c.JSON(articles)
 }
