@@ -287,13 +287,11 @@ func (ArticlesController) ListAll(c *iris.Context) {
 func (ArticlesController) ListFrontend(c *iris.Context) {
 	var articles []Article
 
-	err:=stormdb.Find("Aproved",true,&articles)
+	err:=stormdb.Find("Approved",true,&articles)
 	if err!=nil{
-		c.RenderJSON(500,err)
+		c.RenderJSON(500,err.Error())
 		return
 	}
-
-
 
 	c.JSON(articles)
 }

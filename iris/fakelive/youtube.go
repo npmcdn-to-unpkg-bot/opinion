@@ -21,9 +21,7 @@ var Youtube2Platform = map[string]*youtubeIdMapping{}
 var Platform2Youtube = map[int64]*youtubeIdMapping{}
 
 func getYoutubeVideoDuration(ytid string) (int, error) {
-
 	return mp4util.Duration(basedir + "/" + ytid + ".mp4")
-
 }
 
 func downloadMissingYoutubeVideos() error {

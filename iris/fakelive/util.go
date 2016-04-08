@@ -179,7 +179,6 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 		}
 
 
-
 		if currVideo.Disabled{
 			log.Println(currVideo)
 			continue
@@ -199,20 +198,21 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 			log.Println(stacktrace.Propagate(err, "video id : %d", currVideo.Id))
 			continue
 		}
+		endVideoTime := StartTime.Add(duration)
 		//
 		if startLatestIndex < len(startLatestVideosTimes) {
 
 
 			//check if at the end of the video we pass the startstream time
 
-			endVideoTime := StartTime.Add(duration)
+
 
 			log.Println(endVideoTime, startLatestVideosTimes[startLatestIndex].getHourSeconds())
 
 			//the livestream starts before the end of the vod
 			if endVideoTime.After(startLatestVideosTimes[startLatestIndex].getHourSeconds()) {
 				startLatestVideosTimes[startLatestIndex].Once.Do(func() {
-					//TODO resolv this mess <
+					//TODO resolve this mess <
 					cuttime := endVideoTime.Sub(startLatestVideosTimes[startLatestIndex].getHourSeconds())
 
 					playtime := duration - cuttime
