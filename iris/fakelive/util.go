@@ -217,6 +217,8 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 					//TODO resolve this mess <
 					cuttime := endVideoTime.Sub(startLatestVideosTimes[startLatestIndex].getHourSeconds())
 
+					log.Println("cuttime",cuttime)
+
 
 
 					playtime := duration - cuttime
