@@ -17,8 +17,8 @@ type PublisherPlugin struct {
 }
 
 func NewPublisherPlugin(baseURL string, authenticator iris.HandlerFunc, dbb *bolt.DB) *PublisherPlugin {
-	db = dbb
-	stormdb = &storm.DB{Bolt:db}
+
+	stormdb = &storm.DB{Bolt:dbb}
 	log.Println(stormdb==nil)
 	stormdb.Init(Publisher{})
 
