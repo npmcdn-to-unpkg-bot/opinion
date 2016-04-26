@@ -150,9 +150,7 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 		})
 
 		log.Println("-->",currVideo)
-
 		starttime = starttime.Add(duration)
-
 	}
 
 	sstarttime = starttime

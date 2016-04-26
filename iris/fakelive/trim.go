@@ -11,7 +11,7 @@ func syncPlaylist(videos []Video) error {
 	for i := range videos {
 		var video Video
 		err := stormdb.One("Id", videos[i].Id, &video)
-		if err == storm.ErrNotFound || err == storm.ErrIndexNotFound {
+		if err == storm.ErrNotFound{
 			er := stormdb.Save(videos[i])
 			if er != nil {
 				log.Println(er)
