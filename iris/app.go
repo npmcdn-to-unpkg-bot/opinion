@@ -16,6 +16,7 @@ import (
 	"os"
 	"io"
 	"github.com/asdine/storm"
+	"log"
 )
 
 type app struct {
@@ -27,6 +28,7 @@ func (a *app) run() error {
 
 	db, err := bolt.Open("my.db", 0600, nil)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	authenticator := publisher.AngularAuth(&storm.DB{Bolt:db})
