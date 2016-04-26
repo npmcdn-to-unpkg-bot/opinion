@@ -244,7 +244,7 @@ func (*FakeliveController) ReloadNow(c *iris.Context) {
 	}
 
 	if !strings.Contains(r.String(),"DONE"){
-		c.Error("failed",500)
+		c.EmitError(500)
 
 	}
 
