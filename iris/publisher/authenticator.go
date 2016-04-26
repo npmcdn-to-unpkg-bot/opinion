@@ -9,9 +9,7 @@ import (
 	"net/http"
 	"time"
 
-
 	"log"
-
 
 	"github.com/kataras/iris"
 	"github.com/asdine/storm"
@@ -19,7 +17,7 @@ import (
 
 const (
 	IrisContextField = "Session"
-	XSRFCookieName   = "XSRF-TOKEN"
+	XSRFCookieName = "XSRF-TOKEN"
 	TokenHeaderField = "X-XSRF-TOKEN"
 )
 
@@ -131,7 +129,7 @@ func Auther(c *iris.Context, db *storm.DB) error {
 
 	var sess Session
 
-	err:=db.One("Token",token,&sess)
+	err := db.One("Token", token, &sess)
 	if err != nil {
 		return err
 	}
@@ -200,11 +198,10 @@ func Signer(c *iris.Context, db *storm.DB, findUser FindUser, convertPassword Co
 		Expires: expire,
 	}
 
-
-	err=db.Save(session)
+	err = db.Save(session)
 
 	if err != nil {
-		c.RenderJSON(500,err.Error())
+		c.RenderJSON(500, err.Error())
 		return err
 	}
 

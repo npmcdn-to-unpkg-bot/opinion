@@ -12,7 +12,7 @@ var stormdb *storm.DB
 
 var (
 	PublishersBucket = []byte("Publisher")
-	SessionsBucket   = []byte("Sessions")
+	SessionsBucket = []byte("Sessions")
 	Sessions         *bolt.Bucket
 )
 

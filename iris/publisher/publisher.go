@@ -1,10 +1,7 @@
 package publisher
 
 import (
-
-
 	"time"
-
 
 	"github.com/kataras/iris"
 
@@ -18,11 +15,11 @@ type Publisher struct {
 	Password string
 	Salt     string
 
-	Name  string
-	Image *Base64Img `storm:"inline"`
-	Admin bool
-	Date  time.Time
-	Updated time.Time
+	Name     string
+	Image    *Base64Img `storm:"inline"`
+	Admin    bool
+	Date     time.Time
+	Updated  time.Time
 }
 
 type Base64Img struct {
@@ -31,8 +28,6 @@ type Base64Img struct {
 	Filename string
 	Base64   string
 }
-
-
 
 func (pub *Publisher) ID() string {
 
@@ -44,17 +39,14 @@ func (pub *Publisher) PASSWORD() string {
 	return pub.Password
 }
 
-
 func (pub *Publisher) FindUser(email string) (User, error) {
 
-
-	err:=stormdb.One("Email",email,pub)
-	if err!=nil{
-		return nil,err
+	err := stormdb.One("Email", email, pub)
+	if err != nil {
+		return nil, err
 	}
 
-
-	return pub,nil
+	return pub, nil
 
 }
 
@@ -69,13 +61,13 @@ func (PublisherController) Create(c *iris.Context) {
 		return
 	}
 
-	p.Id=bson.NewObjectId().Hex()
+	p.Id = bson.NewObjectId().Hex()
 
 	p.Password = NewSha512Password(p.Password)
 
-	err=stormdb.Save(p)
+	err = stormdb.Save(p)
 	if err != nil {
-		c.RenderJSON(500,err.Error())
+		c.RenderJSON(500, err.Error())
 		return
 	}
 }
@@ -87,32 +79,29 @@ func (PublisherController) Edit(c *iris.Context) {
 	err := c.ReadJSON(&p)
 	if err != nil {
 		if err != nil {
-			c.RenderJSON(500,err.Error())
+			c.RenderJSON(500, err.Error())
 			return
 		}
 	}
 
 	var old Publisher
 
-	err=stormdb.One("Id",id,&old)
+	err = stormdb.One("Id", id, &old)
 	if err != nil {
-		c.RenderJSON(500,err.Error())
+		c.RenderJSON(500, err.Error())
 		return
 	}
-
 
 	p.Updated = time.Now()
 	if p.Password != old.Password {
 		p.Password = NewSha512Password(p.Password)
 	}
 
-
-	err=stormdb.Save(p)
+	err = stormdb.Save(p)
 	if err != nil {
-		c.RenderJSON(500,err)
+		c.RenderJSON(500, err)
 		return
 	}
-
 
 }
 
@@ -121,9 +110,9 @@ func (PublisherController) GetId(c *iris.Context) {
 	id := c.Param("id")
 	var pub Publisher
 
-	err:=stormdb.One("Id",id,&pub)
+	err := stormdb.One("Id", id, &pub)
 	if err != nil {
-		c.RenderJSON(500,err.Error())
+		c.RenderJSON(500, err.Error())
 		return
 	}
 
@@ -135,9 +124,9 @@ func (PublisherController) GetImage(c *iris.Context) {
 	id := c.Param("id")
 
 	var pub Publisher
-	err:=stormdb.One("Id",id,&pub)
+	err := stormdb.One("Id", id, &pub)
 	if err != nil {
-		c.RenderJSON(500,err.Error())
+		c.RenderJSON(500, err.Error())
 		return
 	}
 
@@ -148,11 +137,11 @@ func (PublisherController) GetImage(c *iris.Context) {
 func (PublisherController) Delete(c *iris.Context) {
 
 	id := c.Param("id")
-	p:=Publisher{Id:id}
+	p := Publisher{Id:id}
 
-	err:=stormdb.Remove(p)
+	err := stormdb.Remove(p)
 	if err != nil {
-		c.RenderJSON(500,err)
+		c.RenderJSON(500, err)
 		return
 	}
 }
@@ -160,9 +149,9 @@ func (PublisherController) Delete(c *iris.Context) {
 func (PublisherController) ListAll(c *iris.Context) {
 	var publishers []Publisher
 
-	err:=stormdb.All(&publishers)
+	err := stormdb.All(&publishers)
 	if err != nil {
-		c.RenderJSON(500,err)
+		c.RenderJSON(500, err)
 		return
 	}
 
@@ -171,7 +160,7 @@ func (PublisherController) ListAll(c *iris.Context) {
 
 func AddDefaultPub() error {
 	var p = &Publisher{}
-	p.Id=bson.NewObjectId().Hex()
+	p.Id = bson.NewObjectId().Hex()
 	p.Name = "Marcelo Pires"
 	p.Password = "Kirk1zodiak"
 	p.Email = "thesyncim@gmail.com"

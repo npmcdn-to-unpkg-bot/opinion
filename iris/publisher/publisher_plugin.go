@@ -5,7 +5,6 @@ import (
 	"github.com/boltdb/bolt"
 	"github.com/kataras/iris"
 
-
 	"github.com/asdine/storm"
 )
 
@@ -18,10 +17,10 @@ type PublisherPlugin struct {
 
 func NewPublisherPlugin(baseURL string, authenticator iris.HandlerFunc, dbb *bolt.DB) *PublisherPlugin {
 	db = dbb
-	stormdb=&storm.DB{Bolt:db}
+	stormdb = &storm.DB{Bolt:db}
 	stormdb.Init(Publisher{})
 
-AddDefaultPub()
+	AddDefaultPub()
 
 	return &PublisherPlugin{
 		BaseUrl:             baseURL,

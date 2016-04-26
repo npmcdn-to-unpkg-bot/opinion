@@ -8,12 +8,10 @@ import (
 	"github.com/asdine/storm"
 )
 
-
 var (
 	db             *bolt.DB
 	stormdb *storm.DB
 )
-
 
 type SecureStreamPlugin struct {
 	container        iris.IPluginContainer
@@ -26,7 +24,7 @@ type SecureStreamPlugin struct {
 
 func NewSecureStreamPlugin(tokenURL, clientURL string, authenticator iris.HandlerFunc, dbb *bolt.DB) *SecureStreamPlugin {
 	db = dbb
-	stormdb=&storm.DB{Bolt:db}
+	stormdb = &storm.DB{Bolt:db}
 	stormdb.Init(Token{})
 	stormdb.Init(Client{})
 	return &SecureStreamPlugin{

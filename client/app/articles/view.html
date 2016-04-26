@@ -18,8 +18,8 @@
         </div>
         <div class="date">{{article.Title}}</div>
     </div>
-    <div class="textContent">
-        {{article.Text}}
+    <div class="textContent" ng-bind-html="article.Text">
+
     </div>
 
     <div class="shareArea" style="">

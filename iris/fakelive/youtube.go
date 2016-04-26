@@ -34,7 +34,7 @@ func downloadMissingYoutubeVideos() error {
 	var failedctr int
 
 	for i := range allvid {
-		_, err := os.Stat(filepath.Join(basedir, allvid[i]+".mp4"))
+		_, err := os.Stat(filepath.Join(basedir, allvid[i] + ".mp4"))
 		//if not exists local download it
 		if os.IsNotExist(err) {
 			//getVideoInfo
@@ -47,7 +47,7 @@ func downloadMissingYoutubeVideos() error {
 				continue
 			}
 
-			file, _ := os.Create(filepath.Join(basedir, (allvid[i])+".mp4"))
+			file, _ := os.Create(filepath.Join(basedir, (allvid[i]) + ".mp4"))
 			defer file.Close()
 
 			for i := range vid.Formats {
@@ -69,7 +69,7 @@ func downloadMissingYoutubeVideos() error {
 					err,
 					"failed to Download video %s to file %s",
 					allvid[i],
-					filepath.Join(basedir, (allvid[i])+".mp4")),
+					filepath.Join(basedir, (allvid[i]) + ".mp4")),
 				)
 			}
 		}

@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 
-
 	"fmt"
 	"github.com/carlescere/scheduler"
 	"github.com/jinzhu/now"
@@ -15,7 +14,6 @@ import (
 	"sync"
 	"time"
 	"github.com/boltdb/bolt"
-
 
 	"strings"
 )
@@ -42,7 +40,6 @@ func RunBackgroundScheduler() *scheduler.Job {
 }
 
 func work() {
-
 
 	err := downloadMissingYoutubeVideos()
 	if err != nil {
@@ -140,16 +137,16 @@ func (*FakeliveController) GetSettings(c *iris.Context) {
 
 func (*FakeliveController) GetNewTrim(c *iris.Context) {
 	var videos []Video
-	err:=stormdb.AllByIndex("Id",&videos)
+	err := stormdb.AllByIndex("Id", &videos)
 	if err != nil {
 		c.JSON(FakeliveSettings{})
 		return
 	}
 
-	max :=30
+	max := 30
 	sort.Sort(ByID(videos))
 
-	if len(videos)<max{
+	if len(videos) < max {
 		max = len(videos)
 	}
 
@@ -157,26 +154,26 @@ func (*FakeliveController) GetNewTrim(c *iris.Context) {
 }
 
 func (*FakeliveController) GetSearchTrim(c *iris.Context) {
-	keyword:=c.Param("keyword")
+	keyword := c.Param("keyword")
 
 	var videos []Video
 
-	max :=30
+	max := 30
 
 	stormdb.Bolt.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte("Video"))
 		c := bucket.Cursor()
 
 		for k, v := c.First(); k != nil; k, v = c.Next() {
-			if strings.Contains(strings.ToLower(string(v)),strings.ToLower(keyword)){
+			if strings.Contains(strings.ToLower(string(v)), strings.ToLower(keyword)) {
 				var video Video
 
-				err:=stormdb.Get("Video",k,&video)
-				if err!=nil{
+				err := stormdb.Get("Video", k, &video)
+				if err != nil {
 					log.Println(err)
 					continue
 				}
-				videos=append(videos,video)
+				videos = append(videos, video)
 			}
 
 		}
@@ -184,35 +181,29 @@ func (*FakeliveController) GetSearchTrim(c *iris.Context) {
 		return nil
 	})
 
-	if len(videos)< max{
-		max=len(videos)
+	if len(videos) < max {
+		max = len(videos)
 	}
 
 	c.JSON(videos[:max])
 
-
-
 }
-
 
 func (*FakeliveController) PostSaveVideoTrim(c *iris.Context) {
 	var video Video
 
-	err:=c.ReadJSON(&video)
+	err := c.ReadJSON(&video)
 	if err != nil {
 		c.JSON(FakeliveSettings{})
 		return
 	}
 
-	err=stormdb.Save(video)
+	err = stormdb.Save(video)
 	if err != nil {
 		c.JSON(FakeliveSettings{})
 		return
 	}
 }
-
-
-
 
 func (*FakeliveController) SetSettings(c *iris.Context) {
 	var lss FakeliveSettings

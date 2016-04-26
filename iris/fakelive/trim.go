@@ -6,25 +6,24 @@ import (
 	"log"
 )
 
-func syncPlaylist(videos []Video)error{
-	now:=time.Now()
-	for i:=range videos{
+func syncPlaylist(videos []Video) error {
+	now := time.Now()
+	for i := range videos {
 		var video Video
-		err:=stormdb.One("Id",videos[i].Id,&video)
-		if err==storm.ErrNotFound || err==storm.ErrIndexNotFound{
-			er:=stormdb.Save(videos[i])
-			if er!=nil{
+		err := stormdb.One("Id", videos[i].Id, &video)
+		if err == storm.ErrNotFound || err == storm.ErrIndexNotFound {
+			er := stormdb.Save(videos[i])
+			if er != nil {
 				log.Println(er)
-				log.Println(videos[i],videos[i].Id)
+				log.Println(videos[i], videos[i].Id)
 				return err
 			}
 			continue
 
-
-		}else if err==nil{
+		} else if err == nil {
 			continue
 		}
-		log.Println(videos[i],videos[i].Id)
+		log.Println(videos[i], videos[i].Id)
 		return err
 	}
 

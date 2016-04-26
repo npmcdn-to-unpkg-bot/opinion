@@ -17,7 +17,7 @@ type FakelivePlugin struct {
 
 func NewFakelivePlugin(baseURL string, authenticator iris.HandlerFunc, dbb *bolt.DB) *FakelivePlugin {
 	db = dbb
-	stormdb=&storm.DB{Bolt:db}
+	stormdb = &storm.DB{Bolt:db}
 	stormdb.Init(Video{})
 	err := createBoltBuckets()
 	if err != nil {
@@ -67,10 +67,9 @@ func (i *FakelivePlugin) PreListen(s *iris.Station) {
 	fake.Post("/settings", i.Authenticator, i.FakeliveController.SetSettings)
 	fake.Get("/settings", i.Authenticator, i.FakeliveController.GetSettings)
 
-
-	fake.Get("/trim/new", i.Authenticator,i.FakeliveController.GetNewTrim)
-	fake.Get("/trim/search/:keyword",i.Authenticator,i.FakeliveController.GetSearchTrim)
-	fake.Post("/trim/save",i.Authenticator,i.FakeliveController.PostSaveVideoTrim)
+	fake.Get("/trim/new", i.Authenticator, i.FakeliveController.GetNewTrim)
+	fake.Get("/trim/search/:keyword", i.Authenticator, i.FakeliveController.GetSearchTrim)
+	fake.Post("/trim/save", i.Authenticator, i.FakeliveController.PostSaveVideoTrim)
 
 	fake.Post("/reload", i.Authenticator, i.FakeliveController.ReloadNow)
 

@@ -25,10 +25,10 @@ type playlist struct {
 }
 
 type Video struct {
-	Id int `xml:"id,attr" storm:"id"`
-	StartTime int
-	EndTime int
-	Disabled bool
+	Id              int `xml:"id,attr" storm:"id"`
+	StartTime       int
+	EndTime         int
+	Disabled        bool
 	Id_user         int           `xml:"id_user,attr"`
 	Title           string        `xml:"title,attr"`
 	Thumbnail       string        `xml:"thumbnail,attr"`
@@ -62,7 +62,7 @@ func SaveCurrentPlaylist(vids []SmilPlaylist) error {
 	})
 }
 
-func GetCurrentPlaylist()[]SmilPlaylist {
+func GetCurrentPlaylist() []SmilPlaylist {
 	var playlist []SmilPlaylist
 	err := db.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
@@ -140,6 +140,10 @@ func firstNAndShuffle(n int, videos []Video) []Video {
 	newVideos := videos[:n]
 	toShuffle := videos[n:]
 	shuffle(toShuffle)
+	shuffle(toShuffle)
+	shuffle(toShuffle)
+	shuffle(toShuffle)
+
 	return append(newVideos, toShuffle...)
 }
 
@@ -162,7 +166,7 @@ func generatePlalist(videos []Video) []Video {
 	//start at the beginning and stop at the end or when we got targetduration
 	for i := 0; i < len(videos); i++ {
 		if sumdur > targetduration {
-			break
+			//	break
 
 		}
 		//exclude ads
@@ -187,6 +191,7 @@ func generatePlalist(videos []Video) []Video {
 			}
 
 		} else {
+			continue
 			dur = getIntDuration(videos[i].Duration)
 			videos[i].Duration = fmt.Sprint(dur)
 			videos[i].DurationSeconds = time.Duration(dur) * time.Second

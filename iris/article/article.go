@@ -10,7 +10,6 @@ import (
 
 	"bytes"
 
-
 	"github.com/kataras/iris"
 	"github.com/thesyncim/opinion/iris/publisher"
 	"image"
@@ -18,8 +17,6 @@ import (
 	"labix.org/v2/mgo/bson"
 
 	"strings"
-
-
 )
 
 type Article struct {
@@ -46,8 +43,6 @@ type ArticlesController struct {
 
 func resizeImage(str *string) (*string, error) {
 
-
-
 	//decode from base64
 	read := base64.NewDecoder(base64.StdEncoding, strings.NewReader(*str))
 	m, _, err := image.Decode(read)
@@ -72,8 +67,8 @@ func resizeImage(str *string) (*string, error) {
 }
 
 func (ArticlesController) Create(c *iris.Context) {
-	var a  Article
-	a.Id= bson.NewObjectId().Hex()
+	var a Article
+	a.Id = bson.NewObjectId().Hex()
 	err := c.ReadJSON(&a)
 	if err != nil {
 		c.Write(err.Error())
@@ -88,13 +83,12 @@ func (ArticlesController) Create(c *iris.Context) {
 
 	var pub publisher.Publisher
 
-	err=stormdb.One("Id",a.Publisherid,&pub)
+	err = stormdb.One("Id", a.Publisherid, &pub)
 	if err != nil {
 		log.Println(err)
-		c.RenderJSON(500,err.Error())
+		c.RenderJSON(500, err.Error())
 		return
 	}
-
 
 	a.PublisherName = pub.Name
 
@@ -111,10 +105,10 @@ func (ArticlesController) Create(c *iris.Context) {
 		a.Image.Base64 = *tmp
 	}
 
-	err= stormdb.Save(a)
+	err = stormdb.Save(a)
 
 	if err != nil {
-		c.RenderJSON(500,err.Error())
+		c.RenderJSON(500, err.Error())
 		return
 	}
 }
@@ -126,20 +120,20 @@ func (ArticlesController) Edit(c *iris.Context) {
 	err := c.ReadJSON(&a)
 	if err != nil {
 		log.Println(err)
-		c.RenderJSON(500,err.Error())
+		c.RenderJSON(500, err.Error())
 		return
 	}
 	var old Article
 
-	err=stormdb.One("Id",a.Id,&old)
+	err = stormdb.One("Id", a.Id, &old)
 
-	if a.Image==nil{
-		a.Image=old.Image
-	}else{
+	if a.Image == nil {
+		a.Image = old.Image
+	} else {
 		tmp, err := resizeImage(&a.Image.Base64)
 		if err != nil {
 			log.Println(err)
-			c.RenderJSON(500,err.Error())
+			c.RenderJSON(500, err.Error())
 			return
 		}
 
@@ -147,20 +141,13 @@ func (ArticlesController) Edit(c *iris.Context) {
 
 	}
 
-
 	a.Updated = time.Now()
 
-
-
-
-
-
-
-log.Println("ai")
-	err=stormdb.Save(a)
+	log.Println("ai")
+	err = stormdb.Save(a)
 	if err != nil {
 		log.Println(err)
-		c.RenderJSON(500,err.Error())
+		c.RenderJSON(500, err.Error())
 		return
 	}
 
@@ -170,11 +157,11 @@ func (ArticlesController) Delete(c *iris.Context) {
 
 	id := c.Param("id")
 
-	a:=Article{Id:id}
+	a := Article{Id:id}
 
-	err:=stormdb.Remove(a)
+	err := stormdb.Remove(a)
 	if err != nil {
-		c.RenderJSON(500,err)
+		c.RenderJSON(500, err)
 		return
 	}
 }
@@ -185,12 +172,11 @@ func (ArticlesController) GetId(c *iris.Context) {
 
 	var a Article
 
-	err:=stormdb.One("Id", id, &a)
+	err := stormdb.One("Id", id, &a)
 	if err != nil {
-		c.RenderJSON(500,err)
+		c.RenderJSON(500, err)
 		return
 	}
-
 
 	c.JSON(a)
 
@@ -202,29 +188,29 @@ func (ArticlesController) GetPublisher(c *iris.Context) {
 
 	var a = &Article{Id:id}
 
-	err:=stormdb.One("Id", id, &a)
-	if err!=nil{
-		c.RenderJSON(500,err)
+	err := stormdb.One("Id", id, &a)
+	if err != nil {
+		c.RenderJSON(500, err)
 		return
 	}
 	var p publisher.Publisher
-	err=stormdb.One("Id",id,&p)
-	if err!=nil{
-		c.RenderJSON(500,err)
+	err = stormdb.One("Id", id, &p)
+	if err != nil {
+		c.RenderJSON(500, err)
 		return
 	}
 
 	c.JSON(p)
 
 }
-func prepareArticlesforUser(userID string, articles []Article) ([]Article,error) {
+func prepareArticlesforUser(userID string, articles []Article) ([]Article, error) {
 	log.Println("enter")
 	var pub publisher.Publisher
 
-	err:=stormdb.One("Id",userID,&pub)
-	if err!=nil{
+	err := stormdb.One("Id", userID, &pub)
+	if err != nil {
 		log.Println("eerror")
-		return nil,err
+		return nil, err
 	}
 
 	log.Println("ai")
@@ -236,7 +222,7 @@ func prepareArticlesforUser(userID string, articles []Article) ([]Article,error)
 
 	//if is Admin show all
 	if pub.Admin {
-		return articles,nil
+		return articles, nil
 	}
 
 	var filtered []Article
@@ -247,7 +233,7 @@ func prepareArticlesforUser(userID string, articles []Article) ([]Article,error)
 
 	}
 
-	return filtered,nil
+	return filtered, nil
 
 }
 
@@ -260,26 +246,25 @@ func (ArticlesController) ListAll(c *iris.Context) {
 	}
 	log.Println("fodasse")
 
-	err:=stormdb.All(&articles)
-	if err!=nil{
+	err := stormdb.All(&articles)
+	if err != nil {
 		log.Println("fodasse all")
-		c.RenderJSON(400,err)
+		c.RenderJSON(400, err)
 		log.Println(err)
 		return
 	}
 
-	log.Println("ai o caralho",articles)
-	result,err:=prepareArticlesforUser(userid, articles)
+	log.Println("ai o caralho", articles)
+	result, err := prepareArticlesforUser(userid, articles)
 	log.Println("adeus")
-	if err!=nil{
+	if err != nil {
 		log.Println("fodasse prepare")
-		c.RenderJSON(400,err)
+		c.RenderJSON(400, err)
 		log.Println(err)
 		return
 	}
 
 	log.Println("what??")
-
 
 	c.JSON(result)
 }
@@ -287,9 +272,9 @@ func (ArticlesController) ListAll(c *iris.Context) {
 func (ArticlesController) ListFrontend(c *iris.Context) {
 	var articles []Article
 
-	err:=stormdb.Find("Approved",true,&articles)
-	if err!=nil{
-		c.RenderJSON(500,err.Error())
+	err := stormdb.Find("Approved", true, &articles)
+	if err != nil {
+		c.RenderJSON(500, err.Error())
 		return
 	}
 

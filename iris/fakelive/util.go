@@ -88,18 +88,18 @@ func getIntDuration(dur string) int {
 }
 
 type SmilPlaylist struct {
-	Id []byte `storm:"id"`
-	Title           string
-	Thumbnail       string
-	Duration string
+	Id               []byte `storm:"id"`
+	Title            string
+	Thumbnail        string
+	Duration         string
 	StartTimeSeconds int
-	EndTimeSeconds  int
-	VidType   videoType
-	Scheduled time.Time
-	EndTime   time.Time
-	Src       string
-	StartSec  int
-	Lenght    int
+	EndTimeSeconds   int
+	VidType          videoType
+	Scheduled        time.Time
+	EndTime          time.Time
+	Src              string
+	StartSec         int
+	Lenght           int
 }
 
 func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []SmilPlaylist, sstarttime time.Time) {
@@ -107,22 +107,19 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 	for i := range videos {
 
 		var currVideo Video
-		err:=stormdb.One("Id",videos[i].Id,&currVideo)
-		if err!=nil{
+		err := stormdb.One("Id", videos[i].Id, &currVideo)
+		if err != nil {
 			log.Fatalln(err)
 		}
 
-		if currVideo.Disabled{
+		if currVideo.Disabled {
 			log.Println(currVideo)
 			continue
 		}
-		duration:=videos[i].DurationSeconds
-		if currVideo.StartTime!=0 || currVideo.EndTime!=0{
-
-			duration=time.Duration(currVideo.EndTime-currVideo.StartTime)*time.Second
-
+		duration := videos[i].DurationSeconds
+		if currVideo.StartTime != 0 || currVideo.EndTime != 0 {
+			duration = time.Duration(currVideo.EndTime - currVideo.StartTime) * time.Second
 		}
-
 
 		location, err := GetVideoLocation(currVideo.Id)
 		if err != nil {
@@ -143,6 +140,8 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 			StartSec:  0,
 			Lenght:    -1,
 		})
+
+		log.Println("-->",currVideo)
 
 		starttime = starttime.Add(duration)
 
@@ -173,19 +172,18 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 	for i := range ids {
 
 		var currVideo Video
-		err:=stormdb.One("Id",ids[i].Id,&currVideo)
-		if err!=nil{
+		err := stormdb.One("Id", ids[i].Id, &currVideo)
+		if err != nil {
 			log.Fatalln(err)
 		}
 
-
-		if currVideo.Disabled{
+		if currVideo.Disabled {
 			log.Println(currVideo)
 			continue
 		}
-		duration:=ids[i].DurationSeconds
-		if currVideo.StartTime!=0 || currVideo.EndTime!=0{
-			duration=time.Duration(currVideo.EndTime-currVideo.StartTime)*time.Second
+		duration := ids[i].DurationSeconds
+		if currVideo.StartTime != 0 || currVideo.EndTime != 0 {
+			duration = time.Duration(currVideo.EndTime - currVideo.StartTime) * time.Second
 
 		}
 
@@ -202,9 +200,7 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 		//
 		if startLatestIndex < len(startLatestVideosTimes) {
 
-
 			//check if at the end of the video we pass the startstream time
-
 
 
 			log.Println(endVideoTime, startLatestVideosTimes[startLatestIndex].getHourSeconds())
@@ -214,6 +210,8 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 				startLatestVideosTimes[startLatestIndex].Once.Do(func() {
 					//TODO resolve this mess <
 					cuttime := endVideoTime.Sub(startLatestVideosTimes[startLatestIndex].getHourSeconds())
+
+
 
 					playtime := duration - cuttime
 
@@ -290,18 +288,12 @@ func genSmil(smilp []SmilPlaylist) string {
                 <stream name="fakelive"></stream>
 
 `)
-
 	for i := range smilp {
-
 		var lenght = -1
-
-		if smilp[i].EndTimeSeconds!=0 {
-			lenght=smilp[i].EndTimeSeconds-smilp[i].StartTimeSeconds
+		if smilp[i].EndTimeSeconds != 0 {
+			lenght = smilp[i].EndTimeSeconds - smilp[i].StartTimeSeconds
 		}
-
-
 		smil.WriteString(fmt.Sprintf(tpllive, i, timeFormated(smilp[i].Scheduled), smilp[i].Src, smilp[i].StartTimeSeconds, lenght) + "\n")
-
 	}
 
 	smil.WriteString(`</body></smil>`)
@@ -444,7 +436,7 @@ func GetVideoLocation(id int) (string, error) {
 		if strings.Contains(vid_clip.Vod_flash, "rtmp") {
 			res := strings.Split(vid_clip.Vod_flash, "/")
 
-			location = res[len(res)-1]
+			location = res[len(res) - 1]
 		} else {
 			location = vid_clip.Vod_flash
 		}

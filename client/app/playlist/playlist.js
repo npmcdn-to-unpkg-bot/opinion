@@ -212,11 +212,6 @@ angular.module('myApp.Playlist', ['ngRoute'])
 
 
     $scope.videos = [];
-
-
-
-
-
     var update = function () {
 
 
@@ -284,4 +279,37 @@ angular.module('myApp.Playlist', ['ngRoute'])
 
 
 
-}]);
+}]).directive('lapTimeInput', function ($window) {
+    var tpl = '<div class="lap_time_input" > \
+	          <!--<input ng-model="lapTimeInput" type="number" placeholder="00.00">--> \
+	          <input ng-model="lap_time.hours" style="width: 35px" type="number" class="hours" placeholder="00" min="0" max="24" step="1"> \
+            <span class="lap-time-sep">:</span> \
+            <input ng-model="lap_time.minutes"  style="width: 35px" type="number" class="minutes" placeholder="00" min="0" max="60" step="1"> \
+            <span class="lap-time-sep">:</span> \
+            <input ng-model="lap_time.seconds"  style="width: 35px" type="number" class="seconds" placeholder="00" min="0" max="60" step="1"> \
+            </div>';
+
+    return {
+        restrict: 'A',
+        template: tpl,
+        replace: true,
+        scope: {
+            lapTimeInput: '='
+        },
+        link: function (scope, element, attrs) {
+
+            scope.$watch('lapTimeInput', function (newValue) {
+                var duration = moment.duration(newValue, 'seconds');
+                scope.lap_time = {
+                    hours: duration.hours(),
+                    minutes: duration.minutes(),
+                    seconds: duration.seconds()
+                }
+            });
+
+            scope.$watchCollection('lap_time', function (newTime, oldTime) {
+                scope.lapTimeInput = moment.duration(newTime, 'seconds').asSeconds();
+            });
+        }
+    };
+});

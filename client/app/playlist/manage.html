@@ -23,10 +23,12 @@
         <td><img style="height: 50px" data-ng-src="{{::video.Thumbnail}}"></td>
         <td>{{::video.Title}}</td>
         <td><div class="form-group">
-            <input type="number" class="form-control"  placeholder="Inicio" ng-model="video.StartTime">
+           <div style="width: 30px!important;" lap-time-input="video.StartTime"></div>
+          <!--  <input type="number" class="form-control"  placeholder="Inicio" ng-model="video.StartTime">-->
         </div></td>
         <td><div class="form-group">
-            <input type="number" class="form-control"  placeholder="Fim" ng-model="video.EndTime">
+            <div  style="width: 30px!important;" lap-time-input="video.EndTime"></div>
+            <!--<input type="number" class="form-control"  placeholder="Fim" ng-model="video.EndTime">-->
         </div></td>
         <td><input type="checkbox" ng-model="video.Disabled"/></td>
         <td> <button type="submit" ng-click="updateVideo(video)" class="btn btn-default">Update</button></td>
