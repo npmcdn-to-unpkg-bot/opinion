@@ -277,7 +277,7 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 
 		videos = append(videos, currVideo)
 
-		StartTime = StartTime.Add(ids[i].DurationSeconds)
+		StartTime = StartTime.Add(duration)
 	}
 
 	return
