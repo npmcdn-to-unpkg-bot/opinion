@@ -138,8 +138,10 @@ func (PublisherController) GetImage(c *iris.Context) {
 		return
 	}
 
-	c.Response.Header.Set("Content-Type",pub.Image.Filetype)
-	c.Write(buf)
+
+
+	c.ResponseWriter.Header().Set("Content-Type",pub.Image.Filetype)
+	c.WriteData(200,buf)
 
 }
 
