@@ -76,6 +76,7 @@ func (i *ArticlesPlugin) PreListen(s *iris.Station) {
 
 	articlesFrontend := s.Party(i.BaseUrl + "f")
 	articlesFrontend.Get("/getid/:id", i.ArticlesController.GetId)
+	articlesFrontend.Get("/image/:id", i.ArticlesController.GetImage)
 	articlesFrontend.Get("/listfrontend", i.ArticlesController.ListFrontend)
 
 	i.container.Printf("Plugin article registered \n")

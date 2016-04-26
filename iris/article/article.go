@@ -280,8 +280,35 @@ func (ArticlesController) ListFrontend(c *iris.Context) {
 
 
 	for i, j := 0, len(articles)-1; i < j; i, j = i+1, j-1 {
+		articles[i].Image=nil
+		articles[j].Image=nil
 		articles[i], articles[j] = articles[j], articles[i]
 	}
 
 	c.JSON(articles)
 }
+
+func (ArticlesController) GetImage(c *iris.Context) {
+
+	id := c.Param("id")
+
+	var a Article
+	err := stormdb.One("Id", id, &a)
+	if err != nil {
+		c.RenderJSON(500, err.Error())
+		return
+	}
+
+
+	buf,err:=base64.StdEncoding.DecodeString(a.Image.Base64)
+	if err != nil {
+		c.RenderJSON(500, err.Error())
+		return
+	}
+
+
+	c.ResponseWriter.Header().Set("Content-Type",a.Image.Filetype)
+	c.WriteData(200,buf)
+
+}
+
