@@ -7,6 +7,7 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 	"log"
+	"encoding/base64"
 )
 
 type Publisher struct {
@@ -130,7 +131,15 @@ func (PublisherController) GetImage(c *iris.Context) {
 		return
 	}
 
-	c.JSON(pub.Image.Base64)
+
+	buf,err:=base64.StdEncoding.DecodeString(pub.Image.Base64)
+	if err != nil {
+		c.RenderJSON(500, err.Error())
+		return
+	}
+
+	c.Response.Header.Set("Content-Type",pub.Image.Filetype)
+	c.Write(buf)
 
 }
 
