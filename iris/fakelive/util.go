@@ -211,6 +211,8 @@ func genSmilPlaylistSlice(ids []Video, startTime string) (smilPlaylist []SmilPla
 
 			log.Println(endVideoTime, startLatestVideosTimes[startLatestIndex].getHourSeconds())
 
+
+			//09:30  09:15
 			//the livestream starts before the end of the vod
 			if endVideoTime.After(startLatestVideosTimes[startLatestIndex].getHourSeconds()) {
 				startLatestVideosTimes[startLatestIndex].Once.Do(func() {

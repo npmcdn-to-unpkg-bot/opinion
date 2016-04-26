@@ -85,7 +85,7 @@ angular.module('myApp.Articles', ['ngRoute'])
     $scope.getPublisherImage= function (id) {
 
         var request = new XMLHttpRequest();
-        request.open('GET', window.hostname + 'publisher/image/'+id, false);  // `false` makes the request synchronous
+        request.open('GET', window.hostname + 'publisher/publisher/image/'+id, false);  // `false` makes the request synchronous
         request.send(null);
 
         if (request.status === 200) {

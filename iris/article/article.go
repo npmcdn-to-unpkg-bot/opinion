@@ -278,5 +278,10 @@ func (ArticlesController) ListFrontend(c *iris.Context) {
 		return
 	}
 
+
+	for i, j := 0, len(articles)-1; i < j; i, j = i+1, j-1 {
+		articles[i], articles[j] = articles[j], articles[i]
+	}
+
 	c.JSON(articles)
 }
