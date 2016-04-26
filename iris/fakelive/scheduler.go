@@ -229,7 +229,7 @@ func (*FakeliveController) SetSettings(c *iris.Context) {
 func (*FakeliveController) ReloadNow(c *iris.Context) {
 	work()
 
-	resp,err:=http.Get("http://opinion.azorestv.com:1935/reload")
+	resp,err:=http.Get("http://127.0.0.1:1935/reload")
 	if err != nil {
 		c.Write(err.Error())
 		return
