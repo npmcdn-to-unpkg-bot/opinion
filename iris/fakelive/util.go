@@ -127,6 +127,14 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 			continue
 		}
 
+		var lenght= -1
+
+		if currVideo.EndTime !=0{
+			lenght=currVideo.EndTime-currVideo.StartTime
+		}
+
+
+
 		smilPlaylist = append(smilPlaylist, SmilPlaylist{
 			Title:currVideo.Title,
 			Thumbnail:currVideo.Thumbnail,
@@ -137,8 +145,8 @@ func appendLatestVideos(videos []Video, starttime time.Time) (smilPlaylist []Smi
 			EndTime:   starttime.Add(duration),
 			Src:       location,
 			Duration:duration.String(),
-			StartSec:  0,
-			Lenght:    -1,
+			StartSec:  currVideo.StartTime,
+			Lenght:    lenght,
 		})
 
 		log.Println("-->",currVideo)
