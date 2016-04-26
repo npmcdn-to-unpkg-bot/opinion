@@ -16,6 +16,8 @@ import (
 	"github.com/boltdb/bolt"
 
 	"strings"
+	"github.com/Azure/azure-sdk-for-go/core/http"
+	"bytes"
 )
 
 var basedir = "/var/www/vhosts/azorestv.com/httpdocs/uploads/movies/yt"
@@ -226,12 +228,25 @@ func (*FakeliveController) SetSettings(c *iris.Context) {
 
 func (*FakeliveController) ReloadNow(c *iris.Context) {
 	work()
-	cmd := exec.Command("service", "WowzaStreamingEngine", "restart")
-	err := cmd.Start()
+
+	resp,err:=http.Get("http://opinion.azorestv.com:1935/reload")
 	if err != nil {
 		c.Write(err.Error())
-		log.Fatalln(stacktrace.Propagate(err, ""))
 		return
 	}
-	cmd.Wait()
+
+	var r = &bytes.Buffer{}
+
+	_,err=r.ReadFrom(resp.Body)
+	if err != nil {
+		c.Write(err.Error())
+		return
+	}
+
+	if !strings.Contains(r.String(),"DONE"){
+		c.Error("failed",500)
+
+	}
+
+
 }
